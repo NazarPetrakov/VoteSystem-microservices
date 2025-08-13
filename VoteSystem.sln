@@ -1,0 +1,63 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{827E0CD3-B72D-47B6-A68D-7590B98EB39B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{984BB9B3-3FA3-BE33-9484-CAC21695A33C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PollService", "PollService", "{FAFA48A5-FFD6-700C-7B02-CACB7AABF89F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PollService.API", "src\Services\PollService\PollService.API\PollService.API.csproj", "{EFD176A2-2ABF-4F7A-BC7C-A5EF5FFA1408}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VoteService", "VoteService", "{72832E50-39E0-3009-1086-DE0F78BB2777}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoteService.API", "src\Services\VoteService\VoteService.API\VoteService.API.csproj", "{A4BA31D3-9559-4383-AE27-7DBE9B891793}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EFD176A2-2ABF-4F7A-BC7C-A5EF5FFA1408}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFD176A2-2ABF-4F7A-BC7C-A5EF5FFA1408}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFD176A2-2ABF-4F7A-BC7C-A5EF5FFA1408}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EFD176A2-2ABF-4F7A-BC7C-A5EF5FFA1408}.Debug|x64.Build.0 = Debug|Any CPU
+		{EFD176A2-2ABF-4F7A-BC7C-A5EF5FFA1408}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EFD176A2-2ABF-4F7A-BC7C-A5EF5FFA1408}.Debug|x86.Build.0 = Debug|Any CPU
+		{EFD176A2-2ABF-4F7A-BC7C-A5EF5FFA1408}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFD176A2-2ABF-4F7A-BC7C-A5EF5FFA1408}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFD176A2-2ABF-4F7A-BC7C-A5EF5FFA1408}.Release|x64.ActiveCfg = Release|Any CPU
+		{EFD176A2-2ABF-4F7A-BC7C-A5EF5FFA1408}.Release|x64.Build.0 = Release|Any CPU
+		{EFD176A2-2ABF-4F7A-BC7C-A5EF5FFA1408}.Release|x86.ActiveCfg = Release|Any CPU
+		{EFD176A2-2ABF-4F7A-BC7C-A5EF5FFA1408}.Release|x86.Build.0 = Release|Any CPU
+		{A4BA31D3-9559-4383-AE27-7DBE9B891793}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4BA31D3-9559-4383-AE27-7DBE9B891793}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4BA31D3-9559-4383-AE27-7DBE9B891793}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A4BA31D3-9559-4383-AE27-7DBE9B891793}.Debug|x64.Build.0 = Debug|Any CPU
+		{A4BA31D3-9559-4383-AE27-7DBE9B891793}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A4BA31D3-9559-4383-AE27-7DBE9B891793}.Debug|x86.Build.0 = Debug|Any CPU
+		{A4BA31D3-9559-4383-AE27-7DBE9B891793}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4BA31D3-9559-4383-AE27-7DBE9B891793}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A4BA31D3-9559-4383-AE27-7DBE9B891793}.Release|x64.ActiveCfg = Release|Any CPU
+		{A4BA31D3-9559-4383-AE27-7DBE9B891793}.Release|x64.Build.0 = Release|Any CPU
+		{A4BA31D3-9559-4383-AE27-7DBE9B891793}.Release|x86.ActiveCfg = Release|Any CPU
+		{A4BA31D3-9559-4383-AE27-7DBE9B891793}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{984BB9B3-3FA3-BE33-9484-CAC21695A33C} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{FAFA48A5-FFD6-700C-7B02-CACB7AABF89F} = {984BB9B3-3FA3-BE33-9484-CAC21695A33C}
+		{EFD176A2-2ABF-4F7A-BC7C-A5EF5FFA1408} = {FAFA48A5-FFD6-700C-7B02-CACB7AABF89F}
+		{72832E50-39E0-3009-1086-DE0F78BB2777} = {984BB9B3-3FA3-BE33-9484-CAC21695A33C}
+		{A4BA31D3-9559-4383-AE27-7DBE9B891793} = {72832E50-39E0-3009-1086-DE0F78BB2777}
+	EndGlobalSection
+EndGlobal
