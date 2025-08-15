@@ -1,4 +1,3 @@
-using System;
 using PollService.API.Helpers;
 using PollService.API.Models;
 
@@ -32,16 +31,16 @@ public static class PollOptionDtoExtensions
             PollId = pollId
         };
     }
-    public static PollOption ToEntity(this UpdatePollOptionRequest pollOptionUpdate, DateTimeOffset createTime)
+    public static PollOption ToEntity(this UpdatePollOptionRequest pollOptionUpdate, PollOption existedOption)
     {
         return new PollOption()
         {
             Id = pollOptionUpdate.Id,
-            Text = pollOptionUpdate.Text,
-            Order = pollOptionUpdate.Order,
-            PollId = pollOptionUpdate.PollId,
+            Text = pollOptionUpdate.Text ?? existedOption.Text,
+            Order = pollOptionUpdate.Order ?? existedOption.Order,
+            PollId = pollOptionUpdate.PollId ?? existedOption.PollId,
             UpdatedAt = DateTimeOffset.UtcNow,
-            CreatedAt = createTime
+            CreatedAt = existedOption.CreatedAt
         };
     }
 }

@@ -26,16 +26,16 @@ public static class PollDtoExtensions
             IsClosed = pollCreate.IsClosed,
         };
     }
-    public static Poll ToEntity(this UpdatePollRequest pollUpdate, DateTimeOffset createTime)
+    public static Poll ToEntity(this UpdatePollRequest pollUpdate, Poll existedPoll)
     {
         return new Poll()
         {
             Id = pollUpdate.Id,
-            Title = pollUpdate.Title,
-            Description = pollUpdate.Description,
-            CreatedByUserId = pollUpdate.CreatedByUserId,
-            IsClosed = pollUpdate.IsClosed,
-            CreatedAt = createTime,
+            Title = pollUpdate.Title ?? existedPoll.Title,
+            Description = pollUpdate.Description ?? existedPoll.Description,
+            CreatedByUserId = pollUpdate.CreatedByUserId ?? existedPoll.CreatedByUserId,
+            IsClosed = pollUpdate.IsClosed ?? existedPoll.IsClosed,
+            CreatedAt = existedPoll.CreatedAt,
             UpdatedAt = DateTimeOffset.UtcNow
         };
     }

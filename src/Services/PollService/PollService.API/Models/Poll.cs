@@ -1,3 +1,5 @@
+using Common.Entities;
+
 namespace PollService.API.Models;
 
 public class Poll : BaseEntity

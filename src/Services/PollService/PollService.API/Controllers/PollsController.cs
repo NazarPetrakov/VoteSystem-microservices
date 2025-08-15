@@ -1,5 +1,5 @@
+using Common.Result;
 using Microsoft.AspNetCore.Mvc;
-using PollService.API.Extensions;
 using PollService.API.Helpers;
 using PollService.API.Interfaces;
 

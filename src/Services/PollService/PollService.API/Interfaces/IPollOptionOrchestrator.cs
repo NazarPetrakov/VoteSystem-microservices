@@ -1,5 +1,5 @@
+using Common.Result;
 using PollService.API.Helpers;
-using PollService.API.Helpers.ResultPattern;
 
 namespace PollService.API.Interfaces;
 

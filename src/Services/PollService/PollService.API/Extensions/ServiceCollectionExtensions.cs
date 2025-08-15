@@ -1,3 +1,4 @@
+using Common.Repositories;
 using Microsoft.EntityFrameworkCore;
 using PollService.API.Data;
 using PollService.API.Interfaces;
@@ -19,7 +20,7 @@ public static class ServiceCollectionExtensions
     }
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
-        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+        services.AddScoped(typeof(IRepository<>), typeof(MSSqlRepository<>));
         services.AddScoped<IPollOrchestrator, PollOrchestrator>();
         services.AddScoped<IPollOptionOrchestrator, PollOptionOrchestrator>();
 

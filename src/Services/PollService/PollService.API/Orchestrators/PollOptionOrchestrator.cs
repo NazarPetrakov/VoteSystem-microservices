@@ -1,6 +1,8 @@
+using Common.Errors;
+using Common.Repositories;
+using Common.Result;
 using PollService.API.Extensions;
 using PollService.API.Helpers;
-using PollService.API.Helpers.ResultPattern;
 using PollService.API.Interfaces;
 using PollService.API.Models;
 
@@ -56,7 +58,7 @@ public class PollOptionOrchestrator(IRepository<PollOption> pollOptionRepository
         if (pollOptionFromId == null)
             return Result.Failure<PollOptionResponse>(PollOptionErrors.NotFound(updatePollOptionRequest.Id));
 
-        var poll = updatePollOptionRequest.ToEntity(pollOptionFromId.CreatedAt);
+        var poll = updatePollOptionRequest.ToEntity(pollOptionFromId);
 
         await pollOptionRepository.UpdateAndSaveAsync(poll);
 
