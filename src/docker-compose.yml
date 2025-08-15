@@ -1,0 +1,26 @@
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    ports:
+      - "1433:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "Password1234"
+    volumes:
+      - sql_data:/var/opt/mssql
+  # pollService:
+  #   image: poll-service:1.0
+  #   build:
+  #     context: ./Services/PollService/PollService.API
+  #     dockerfile: Services/PollService/PollService.API/Dockerfile
+  #   ports:
+  #     - "5000:8080"
+  #   environment:
+  #     - DOTNET_RUNNING_IN_CONTAINER=true
+  #     - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+  #     - ConnectionStrings__DefaultConnection=Server=mssql,1433;Database=PollDb;User Id=sa;Password=Password1234;TrustServerCertificate=True
+  #   depends_on:
+  #     - mssql
+
+volumes:
+  sql_data:
