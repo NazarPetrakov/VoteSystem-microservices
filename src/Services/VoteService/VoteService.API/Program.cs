@@ -1,6 +1,14 @@
+using Common.Extensions;
+using VoteService.API.Data;
+using VoteService.API.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services
+    .AddServices()
+    .AddMSSqlDb<VoteDbContext>(
+        builder.Configuration.GetConnectionString("DefaultConnection"));
 
 builder.Services.AddControllers();
 
