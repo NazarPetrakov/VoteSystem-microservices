@@ -3,10 +3,12 @@ using Common.Entities;
 
 namespace Common.Repositories;
 
-public interface IRepository<T> where T : BaseEntity
+public interface IRepository<T, TId>
+    where T : IEntity<TId>
+    where TId : IEquatable<TId>
 {
-    Task<ICollection<T>> GetAllAsync();
-    Task<T?> GetAsync(Guid id, Expression<Func<T, object>>? include = null);
+    Task<ICollection<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null);
+    Task<T?> GetAsync(TId id, Expression<Func<T, object>>? include = null);
     Task<T> CreateAndSaveAsync(T entity);
     Task UpdateAndSaveAsync(T entity);
     Task DeleteAndSaveAsync(T entity);
