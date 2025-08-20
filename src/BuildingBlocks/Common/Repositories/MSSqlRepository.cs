@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Common.Repositories;
 
 public class MSSqlRepository<T, TContext, TId>(TContext context) : IRepository<T, TId>
-    where T : BaseEntity<TId>
+    where T : class, IEntity<TId>
     where TContext : DbContext
     where TId : IEquatable<TId>
 {
