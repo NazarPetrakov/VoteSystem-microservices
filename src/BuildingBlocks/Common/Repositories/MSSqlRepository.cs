@@ -47,5 +47,11 @@ public class MSSqlRepository<T, TContext, TId>(TContext context) : IRepository<T
 
         await context.SaveChangesAsync();
     }
+    public async Task DeleteRangeAndSaveAsync(T[] entities)
+    {
+        context.Set<T>().RemoveRange(entities);
+
+        await context.SaveChangesAsync();
+    }
 }
 

@@ -12,4 +12,6 @@ public interface IRepository<T, TId>
     Task<T> CreateAndSaveAsync(T entity);
     Task UpdateAndSaveAsync(T entity);
     Task DeleteAndSaveAsync(T entity);
+    Task DeleteRangeAndSaveAsync(T[] entities);
+
 }
