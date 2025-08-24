@@ -7,7 +7,8 @@ using VoteService.API.Models;
 namespace VoteService.API.Consumers;
 
 public class PollOptionDeletedConsumer(ILogger<PollOptionDeletedConsumer> logger,
-    IRepository<PollOptionCache, Guid> pollOptionRepository) : IConsumer<PollOptionDeleted>
+    IRepository<PollOptionCache, Guid> pollOptionRepository,
+    IRepository<Vote, Guid> voteRepository) : IConsumer<PollOptionDeleted>
 {
     public async Task Consume(ConsumeContext<PollOptionDeleted> context)
     {
@@ -15,6 +16,10 @@ public class PollOptionDeletedConsumer(ILogger<PollOptionDeletedConsumer> logger
 
         var pollOptionCache = await pollOptionRepository.GetAsync(pollOptionDeleted.PollOptionId)
             ?? throw new NotFoundException($"Poll option with id - {pollOptionDeleted.PollOptionId} not found.");
+
+        // deleting votes related to poll option
+        var votes = await voteRepository.GetAllAsync(v => v.PollOptionId == pollOptionCache.Id);
+        await voteRepository.DeleteRangeAndSaveAsync(votes.ToArray());
 
         await pollOptionRepository.DeleteAndSaveAsync(pollOptionCache);
 

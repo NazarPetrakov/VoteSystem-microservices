@@ -3,6 +3,8 @@ using Common.Repositories;
 using MassTransit;
 using Microsoft.Extensions.Options;
 using VoteService.API.Consumers;
+using VoteService.API.Interfaces;
+using VoteService.API.Orchestrators;
 using VoteService.API.Repositories;
 
 namespace VoteService.API.Extensions;
@@ -15,7 +17,10 @@ public static class ServiceCollectionExtensions
         {
             configure.SetKebabCaseEndpointNameFormatter();
 
-            configure.AddConsumer<PollOptionCreatedConsumer>();
+            configure.AddConsumer<PollOptionCreatedConsumer>(c =>
+            {
+                c.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(2)));
+            });
             configure.AddConsumer<PollCreatedConsumer>();
             configure.AddConsumer<PollDeletedConsumer>();
             configure.AddConsumer<PollOptionDeletedConsumer>();
@@ -31,6 +36,7 @@ public static class ServiceCollectionExtensions
                 });
 
                 cfg.ConfigureEndpoints(context);
+
             });
         });
 
@@ -39,6 +45,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
         services.AddScoped(typeof(IRepository<,>), typeof(MSSqlRepository<,>));
+        services.AddScoped<IVoteOrchestrator, VoteOrchestrator>();
 
         return services;
     }
