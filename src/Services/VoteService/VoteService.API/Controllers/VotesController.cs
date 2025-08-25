@@ -42,7 +42,7 @@ namespace VoteService.API.Controllers
                 onFailure: BadRequest
             );
         }
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteVote(Guid id)
         {
             var result = await voteOrchestrator.DeleteAsync(id);
