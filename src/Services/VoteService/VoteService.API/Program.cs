@@ -1,6 +1,16 @@
-var builder = WebApplication.CreateBuilder(args);
+using Common.Extensions;
+using VoteService.API.Data;
+using VoteService.API.Extensions;
 
+var builder = WebApplication.CreateBuilder(args);
+var configuration = builder.Configuration;
 // Add services to the container.
+builder.Services
+    .AddServices()
+    .AddMSSqlDb<VoteDbContext>(
+        configuration.GetConnectionString("DefaultConnection"))
+    .AddMassTransitOptions(configuration)
+    .AddMassTransitWithRabbitMq();
 
 builder.Services.AddControllers();
 
