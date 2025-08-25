@@ -30,9 +30,10 @@ namespace PollService.API.Controllers
             );
         }
         [HttpPost]
-        public async Task<ActionResult<PollResponse>> Create(CreatePollRequest createPollRequest)
+        public async Task<ActionResult<PollResponse>> Create(CreatePollRequest createPollRequest,
+            CancellationToken cancellationToken)
         {
-            var createdPoll = await pollOrchestrator.CreateAsync(createPollRequest);
+            var createdPoll = await pollOrchestrator.CreateAsync(createPollRequest, cancellationToken);
 
             return createdPoll.Match<PollResponse, ActionResult>(
                 onSuccess: value => CreatedAtAction(nameof(Get), new { id = value.Id }, value),
@@ -50,9 +51,9 @@ namespace PollService.API.Controllers
             );
         }
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(Guid id)
+        public async Task<ActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
-            var result = await pollOrchestrator.DeleteAsync(id);
+            var result = await pollOrchestrator.DeleteAsync(id, cancellationToken);
 
             return result.Match<ActionResult>(
                 onSuccess: Ok,

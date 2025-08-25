@@ -2,7 +2,7 @@ using Common.Entities;
 
 namespace PollService.API.Models;
 
-public class PollOption : BaseEntity
+public class PollOption : BaseEntity<Guid>
 {
     public required string Text { get; set; }
     public int Order { get; set; }

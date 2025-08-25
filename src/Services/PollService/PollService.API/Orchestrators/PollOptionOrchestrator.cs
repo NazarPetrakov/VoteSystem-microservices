@@ -8,8 +8,9 @@ using PollService.API.Models;
 
 namespace PollService.API.Orchestrators;
 
-public class PollOptionOrchestrator(IRepository<PollOption> pollOptionRepository,
-    IRepository<Poll> pollRepository) : IPollOptionOrchestrator
+public class PollOptionOrchestrator(IRepository<PollOption, Guid> pollOptionRepository,
+    IRepository<Poll, Guid> pollRepository,
+    IPollPublisher pollPublisher) : IPollOptionOrchestrator
 {
     public async Task<Result<List<PollOptionResponse>>> GetAllAsync()
     {
@@ -26,7 +27,8 @@ public class PollOptionOrchestrator(IRepository<PollOption> pollOptionRepository
 
         return Result.Success(pollOption.ToDto());
     }
-    public async Task<Result<PollOptionResponse>> CreateAsync(CreatePollOptionRequest createPollOptionRequest)
+    public async Task<Result<PollOptionResponse>> CreateAsync(CreatePollOptionRequest createPollOptionRequest,
+        CancellationToken cancellationToken)
     {
         var poll = await pollRepository.GetAsync(createPollOptionRequest.PollId, p => p.PollOptions);
 
@@ -38,9 +40,13 @@ public class PollOptionOrchestrator(IRepository<PollOption> pollOptionRepository
 
         await pollOptionRepository.CreateAndSaveAsync(pollOption);
 
+        var pollOptionResponse = pollOption.ToDto();
+
+        await pollPublisher.NotifyPollOptionCreatedAsync(pollOptionResponse, cancellationToken);
+
         return Result.Success(pollOption.ToDto());
     }
-    public async Task<Result> DeleteAsync(Guid id)
+    public async Task<Result> DeleteAsync(Guid id, CancellationToken cancellationToken)
     {
         var pollOption = await pollOptionRepository.GetAsync(id);
 
@@ -48,6 +54,8 @@ public class PollOptionOrchestrator(IRepository<PollOption> pollOptionRepository
             return Result.Failure(PollOptionErrors.NotFound(id));
 
         await pollOptionRepository.DeleteAndSaveAsync(pollOption);
+
+        await pollPublisher.NotifyPollOptionDeletedAsync(id, cancellationToken);
 
         return Result.Success();
     }

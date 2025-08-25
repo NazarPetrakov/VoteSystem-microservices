@@ -1,15 +1,13 @@
 using Common.Options;
 using Common.Repositories;
 using MassTransit;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using PollService.API.Data;
-using PollService.API.Interfaces;
-using PollService.API.Orchestrators;
-using PollService.API.Publishers;
-using PollService.API.Repositories;
+using VoteService.API.Consumers;
+using VoteService.API.Interfaces;
+using VoteService.API.Orchestrators;
+using VoteService.API.Repositories;
 
-namespace PollService.API.Extensions;
+namespace VoteService.API.Extensions;
 
 public static class ServiceCollectionExtensions
 {
@@ -18,6 +16,14 @@ public static class ServiceCollectionExtensions
         services.AddMassTransit(configure =>
         {
             configure.SetKebabCaseEndpointNameFormatter();
+
+            configure.AddConsumer<PollOptionCreatedConsumer>(c =>
+            {
+                c.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(2)));
+            });
+            configure.AddConsumer<PollCreatedConsumer>();
+            configure.AddConsumer<PollDeletedConsumer>();
+            configure.AddConsumer<PollOptionDeletedConsumer>();
 
             configure.UsingRabbitMq((context, cfg) =>
             {
@@ -30,16 +36,8 @@ public static class ServiceCollectionExtensions
                 });
 
                 cfg.ConfigureEndpoints(context);
-            });
-        });
 
-        return services;
-    }
-    public static IServiceCollection AddPollDbContext(this IServiceCollection services, IConfiguration config)
-    {
-        services.AddDbContext<PollDbContext>(options =>
-        {
-            options.UseSqlServer(config.GetConnectionString("DefaultConnection"));
+            });
         });
 
         return services;
@@ -47,10 +45,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
         services.AddScoped(typeof(IRepository<,>), typeof(MSSqlRepository<,>));
-        services.AddScoped<IPollOrchestrator, PollOrchestrator>();
-        services.AddScoped<IPollOptionOrchestrator, PollOptionOrchestrator>();
-
-        services.AddScoped<IPollPublisher, PollPublisher>();
+        services.AddScoped<IVoteOrchestrator, VoteOrchestrator>();
 
         return services;
     }
