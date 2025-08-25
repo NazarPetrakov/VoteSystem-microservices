@@ -1,15 +1,16 @@
-using Microsoft.EntityFrameworkCore;
+using Common.Extensions;
 using PollService.API.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
-
+var configuration = builder.Configuration;
 // Add services to the container.
 
 builder.Services.AddControllers();
-
 builder.Services
-    .AddPollDbContext(builder.Configuration)
-    .AddServices();
+    .AddPollDbContext(configuration)
+    .AddServices()
+    .AddMassTransitOptions(configuration)
+    .AddMassTransitWithRabbitMq();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
