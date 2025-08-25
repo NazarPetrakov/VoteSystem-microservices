@@ -3,6 +3,7 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
 COPY . .
+
 RUN dotnet restore "./PollService.API.csproj"
 RUN dotnet build "./PollService.API.csproj" -c Release -o /app/build
 

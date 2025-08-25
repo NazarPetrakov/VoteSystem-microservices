@@ -22,19 +22,57 @@ services:
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
 
-  # pollService:
-  #   image: poll-service:1.0
-  #   build:
-  #     context: ./Services/PollService/PollService.API
-  #     dockerfile: Services/PollService/PollService.API/Dockerfile
-  #   ports:
-  #     - "5000:8080"
-  #   environment:
-  #     - DOTNET_RUNNING_IN_CONTAINER=true
-  #     - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
-  #     - ConnectionStrings__DefaultConnection=Server=mssql,1433;Database=PollDb;User Id=sa;Password=Password1234;TrustServerCertificate=True
-  #   depends_on:
-  #     - mssql
+  pollService:
+    image: poll-service:1.0
+    build:
+      context: ./Services/PollService/PollService.API
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - ASPNETCORE_URLS=http://+:5000
+      - DOTNET_RUNNING_IN_CONTAINER=true
+      - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+      - ConnectionStrings__DefaultConnection=Server=mssql,1433;Database=PollDb;User Id=sa;Password=Password1234;TrustServerCertificate=True
+      - RabbitMq__Host=amqp://rabbit_mq:5672
+      - RabbitMq__Username=n_user
+      - RabbitMq__Password=n_password
+    depends_on:
+      - mssql
+      - rabbit_mq
+
+  voteService:
+    image: vote-service:1.0
+    build:
+      context: ./Services/VoteService/VoteService.API
+      dockerfile: Dockerfile
+    ports:
+      - "5002:5002"
+    environment:
+      - ASPNETCORE_URLS=http://+:5002
+      - DOTNET_RUNNING_IN_CONTAINER=true
+      - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+      - ConnectionStrings__DefaultConnection=Server=mssql,1433;Database=VoteDb;User Id=sa;Password=Password1234;TrustServerCertificate=True
+      - RabbitMq__Host=amqp://rabbit_mq:5672
+      - RabbitMq__Username=n_user
+      - RabbitMq__Password=n_password
+    depends_on:
+      - mssql
+      - rabbit_mq
+
+  apiGateway:
+    image: api-gateway:1.0
+    build:
+      context: ./ApiGateways/OcelotApiGw
+      dockerfile: Dockerfile
+    ports:
+      - "5004:5004"
+    environment:
+      - ASPNETCORE_URLS=http://+:5004
+      - DOTNET_RUNNING_IN_CONTAINER=true
+    depends_on:
+      - voteService
+      - pollService
 
 volumes:
   sql_data:
