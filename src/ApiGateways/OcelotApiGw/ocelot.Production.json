@@ -1,0 +1,115 @@
+{
+  "GlobalConfiguration": {
+    "BaseUrl": "http://localhost:5004"
+  },
+  "Routes": [
+    {
+      "UpstreamPathTemplate": "/gateway/polls",
+      "UpstreamHttpMethod": ["Get"],
+      "DownstreamPathTemplate": "/api/polls",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "pollService",
+          "Port": 5000
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/polls",
+      "UpstreamHttpMethod": ["Post", "Put"],
+      "DownstreamPathTemplate": "/api/polls",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "pollService",
+          "Port": 5000
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/polls/{id}",
+      "UpstreamHttpMethod": ["Get", "Delete"],
+      "DownstreamPathTemplate": "/api/polls/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "pollService",
+          "Port": 5000
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/pollOptions",
+      "UpstreamHttpMethod": ["Get"],
+      "DownstreamPathTemplate": "/api/pollOptions",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "pollService",
+          "Port": 5000
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/pollOptions",
+      "UpstreamHttpMethod": ["Post", "Put"],
+      "DownstreamPathTemplate": "/api/pollOptions",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "pollService",
+          "Port": 5000
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/pollOptions/{id}",
+      "UpstreamHttpMethod": ["Get", "Delete"],
+      "DownstreamPathTemplate": "/api/pollOptions/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "pollService",
+          "Port": 5000
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/votes",
+      "UpstreamHttpMethod": ["Get"],
+      "DownstreamPathTemplate": "/api/votes",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "voteService",
+          "Port": 5002
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/votes",
+      "UpstreamHttpMethod": ["Post"],
+      "DownstreamPathTemplate": "/api/votes",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "voteService",
+          "Port": 5002
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/votes/{id}",
+      "UpstreamHttpMethod": ["Get", "Delete"],
+      "DownstreamPathTemplate": "/api/votes/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "voteService",
+          "Port": 5002
+        }
+      ]
+    }
+  ]
+}
