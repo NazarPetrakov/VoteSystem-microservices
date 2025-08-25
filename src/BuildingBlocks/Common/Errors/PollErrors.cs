@@ -5,6 +5,8 @@ namespace Common.Errors;
 public static class PollErrors
 {
     public static Error NotFound(Guid id) => new("Polls.NotFound", $"The poll with Id '{id}' not found");
+    public static Error MissingOption(Guid pollId, Guid pollOptionId) => new("Polls.MissingOption",
+        $"The poll with Id '{pollId}' does not contain the option with Id '{pollOptionId}'.");
 }
 public static class PollOptionErrors
 {

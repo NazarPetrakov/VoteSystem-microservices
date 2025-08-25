@@ -1,4 +1,6 @@
+using Common.Options;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Protocols.Configuration;
 
@@ -17,6 +19,13 @@ public static class ServiceCollectionExtensions
         {
             options.UseSqlServer(connectionString);
         });
+
+        return services;
+    }
+    public static IServiceCollection AddMassTransitOptions(this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services.Configure<RabbitMqOptions>(configuration.GetSection(RabbitMqOptions.RabbitMq));
 
         return services;
     }
