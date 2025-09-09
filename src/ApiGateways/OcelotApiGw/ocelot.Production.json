@@ -76,6 +76,18 @@
       ]
     },
     {
+      "UpstreamPathTemplate": "/gateway/polls/{id}/close",
+      "UpstreamHttpMethod": ["Patch"],
+      "DownstreamPathTemplate": "/api/polls/{id}/close",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "pollService",
+          "Port": 5002
+        }
+      ]
+    },
+    {
       "UpstreamPathTemplate": "/gateway/votes",
       "UpstreamHttpMethod": ["Get"],
       "DownstreamPathTemplate": "/api/votes",

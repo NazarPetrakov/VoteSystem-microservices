@@ -44,6 +44,9 @@ public class VoteOrchestrator(IRepository<Vote, Guid> voteRepository,
         if (!pollOptionsIds.Contains(pollOption.Id))
             return Result.Failure<VoteResponse>(PollErrors.MissingOption(poll.Id, pollOption.Id));
 
+        if (poll.IsClosed)
+            return Result.Failure<VoteResponse>(VoteErrors.ClosedPoll(poll.Id));
+
         var vote = createVoteRequest.ToEntity();
 
         var createdVote = await voteRepository.CreateAndSaveAsync(vote);

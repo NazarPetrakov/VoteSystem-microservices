@@ -28,6 +28,18 @@
       ]
     },
     {
+      "UpstreamPathTemplate": "/gateway/polls/{id}/close",
+      "UpstreamHttpMethod": ["Patch"],
+      "DownstreamPathTemplate": "/api/polls/{id}/close",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5000
+        }
+      ]
+    },
+    {
       "UpstreamPathTemplate": "/gateway/polls/{id}",
       "UpstreamHttpMethod": ["Get", "Delete"],
       "DownstreamPathTemplate": "/api/polls/{id}",

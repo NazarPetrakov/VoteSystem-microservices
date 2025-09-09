@@ -50,6 +50,16 @@ namespace PollService.API.Controllers
                 onFailure: BadRequest
             );
         }
+        [HttpPatch("{id}/close")]
+        public async Task<ActionResult> ClosePoll(Guid id)
+        {
+            var result = await pollOrchestrator.ClosePollAsync(id);
+
+            return result.Match<ActionResult>(
+                    onSuccess: Ok,
+                    onFailure: BadRequest
+                );
+        }
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {

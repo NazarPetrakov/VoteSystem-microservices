@@ -185,6 +185,35 @@ public class VoteOrchestratorTests
         _voteRepositoryMock.Verify(r => r.CreateAndSaveAsync(It.IsAny<Vote>()), Times.Never);
     }
     [Fact]
+    public async Task CreateAsync_WhenPollIsClosed_ReturnsFailure()
+    {
+        //Arrange
+        var poll = VoteDataFactory.CreatePoll(isClosed: true);
+        var pollOptions = VoteDataFactory.CreatePollOptions(Guid.NewGuid());
+        var createVoteRequest = VoteDataFactory.GetCreateVoteRequest(poll.Id, pollOptions[0].Id);
+
+        _pollRepositoryMock.Setup(r => r.GetAsync(It.IsAny<Guid>(), It.IsAny<Expression<Func<PollCache, object>>>()))
+            .ReturnsAsync(poll);
+        _pollOptionRepositoryMock.Setup(r => r.GetAsync(It.IsAny<Guid>(), It.IsAny<Expression<Func<PollOptionCache, object>>>()))
+            .ReturnsAsync(pollOptions[0]);
+        _pollOptionRepositoryMock.Setup(r => r.GetAllAsync(It.IsAny<Expression<Func<PollOptionCache, bool>>>()))
+            .ReturnsAsync(pollOptions);
+
+        //Act
+        var result = await _voteOrchestrator.CreateAsync(createVoteRequest);
+
+        //Assert
+        Assert.False(result.IsSuccess);
+        Assert.Null(result.Data);
+        Assert.NotNull(result.Error);
+        Assert.Equal("Votes.ClosedPoll", result.Error.Code);
+
+        _pollRepositoryMock.Verify(r => r.GetAsync(It.IsAny<Guid>(), It.IsAny<Expression<Func<PollCache, object>>>()), Times.Once);
+        _pollOptionRepositoryMock.Verify(r => r.GetAsync(It.IsAny<Guid>(), It.IsAny<Expression<Func<PollOptionCache, object>>>()), Times.Once);
+        _pollOptionRepositoryMock.Verify(r => r.GetAllAsync(It.IsAny<Expression<Func<PollOptionCache, bool>>>()), Times.Once);
+        _voteRepositoryMock.Verify(r => r.CreateAndSaveAsync(It.IsAny<Vote>()), Times.Never);
+    }
+    [Fact]
     public async Task DeleteAsync_ReturnsSuccess()
     {
         //Arrange

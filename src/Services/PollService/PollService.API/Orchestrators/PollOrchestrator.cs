@@ -69,6 +69,22 @@ public class PollOrchestrator(IRepository<Poll, Guid> pollRepository,
 
         return Result.Success();
     }
+    public async Task<Result> ClosePollAsync(Guid pollId)
+    {
+        var pollFromId = await pollRepository.GetAsync(pollId);
+
+        if (pollFromId == null)
+            return Result.Failure(PollErrors.NotFound(pollId));
+
+        if (pollFromId.IsClosed)
+            return Result.Failure(PollErrors.AlreadyClosed(pollId));
+
+        pollFromId.IsClosed = true;
+
+        await pollRepository.UpdateAndSaveAsync(pollFromId);
+
+        return Result.Success();
+    }
     public async Task<Result> UpdateAsync(UpdatePollRequest updatePollRequest)
     {
         var pollFromId = await pollRepository.GetAsync(updatePollRequest.Id);

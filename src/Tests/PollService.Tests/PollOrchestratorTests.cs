@@ -160,6 +160,65 @@ public class PollOrchestratorTests
         _pollPublisherMock.Verify(p => p.NotifyPollDeletedAsync(It.IsAny<Guid>(), CancellationToken.None), Times.Never);
     }
     [Fact]
+    public async Task ClosePollAsync_ReturnsSuccess_IsClosed_ShouldBeTrue()
+    {
+        // Arrange
+        var poll = PollDataFactory.CreatePoll(isClosed: false);
+
+        _pollRepositoryMock.Setup(r => r.GetAsync(It.IsAny<Guid>(), It.IsAny<Expression<Func<Poll, object>>>()))
+            .ReturnsAsync(poll);
+        _pollRepositoryMock.Setup(r => r.UpdateAndSaveAsync(poll))
+            .Returns(Task.CompletedTask);
+
+        // Act
+        var result = await _orchestrator.ClosePollAsync(It.IsAny<Guid>());
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.True(poll.IsClosed);
+
+        _pollRepositoryMock.Verify(r => r.GetAsync(It.IsAny<Guid>(), It.IsAny<Expression<Func<Poll, object>>>()), Times.Once);
+        _pollRepositoryMock.Verify(r => r.UpdateAndSaveAsync(It.IsAny<Poll>()), Times.Once);
+    }
+    [Fact]
+    public async Task ClosePollAsync_WhenPollNotFound_ReturnsFailure()
+    {
+        // Arrange
+        _pollRepositoryMock.Setup(r => r.GetAsync(It.IsAny<Guid>(), It.IsAny<Expression<Func<Poll, object>>>()))
+            .ReturnsAsync((Poll?)null);
+
+        // Act
+        var result = await _orchestrator.ClosePollAsync(It.IsAny<Guid>());
+
+        // Assert
+        Assert.False(result.IsSuccess);
+        Assert.NotNull(result.Error);
+        Assert.Equal("Polls.NotFound", result.Error.Code);
+
+        _pollRepositoryMock.Verify(r => r.GetAsync(It.IsAny<Guid>(), It.IsAny<Expression<Func<Poll, object>>>()), Times.Once);
+        _pollRepositoryMock.Verify(r => r.UpdateAndSaveAsync(It.IsAny<Poll>()), Times.Never);
+    }
+    [Fact]
+    public async Task ClosePollAsync_WhenPollIsAlreadyClosed_ReturnsFailure()
+    {
+        // Arrange
+        var poll = PollDataFactory.CreatePoll(isClosed: true);
+
+        _pollRepositoryMock.Setup(r => r.GetAsync(It.IsAny<Guid>(), It.IsAny<Expression<Func<Poll, object>>>()))
+            .ReturnsAsync(poll);
+
+        // Act
+        var result = await _orchestrator.ClosePollAsync(It.IsAny<Guid>());
+
+        // Assert
+        Assert.False(result.IsSuccess);
+        Assert.NotNull(result.Error);
+        Assert.Equal("Polls.AlreadyClosed", result.Error.Code);
+
+        _pollRepositoryMock.Verify(r => r.GetAsync(It.IsAny<Guid>(), It.IsAny<Expression<Func<Poll, object>>>()), Times.Once);
+        _pollRepositoryMock.Verify(r => r.UpdateAndSaveAsync(It.IsAny<Poll>()), Times.Never);
+    }
+    [Fact]
     public async Task UpdateAsync_SuccessUpdate()
     {
         // Arrange
