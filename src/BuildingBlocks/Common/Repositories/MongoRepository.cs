@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Common.Repositories;
 
-public class MSSqlRepository<T, TContext, TId> : IRepository<T, TId>
+public class MongoRepository<T, TContext, TId> : IRepository<T, TId>
     where T : class, IEntity<TId>
     where TContext : DbContext
     where TId : IEquatable<TId>
@@ -12,7 +12,7 @@ public class MSSqlRepository<T, TContext, TId> : IRepository<T, TId>
     private readonly TContext _context;
     private readonly DbSet<T> _dbSet;
 
-    public MSSqlRepository(TContext context)
+    public MongoRepository(TContext context)
     {
         _context = context;
         _dbSet = context.Set<T>();
@@ -30,9 +30,7 @@ public class MSSqlRepository<T, TContext, TId> : IRepository<T, TId>
     }
     public async Task<T?> GetAsync(TId id, Expression<Func<T, object>>? include = null)
     {
-        return include == null
-            ? await _dbSet.AsNoTracking().FirstOrDefaultAsync(p => p.Id.Equals(id))
-            : await _dbSet.Include(include).AsNoTracking().FirstOrDefaultAsync(p => p.Id.Equals(id));
+        return await _dbSet.AsNoTracking().FirstOrDefaultAsync(p => p.Id.Equals(id));
     }
     public async Task<T> CreateAndSaveAsync(T entity)
     {
@@ -50,16 +48,12 @@ public class MSSqlRepository<T, TContext, TId> : IRepository<T, TId>
     }
     public async Task UpdateAndSaveAsync(T entity)
     {
-        _dbSet.Attach(entity);
-        _context.Entry(entity).State = EntityState.Modified;
-
+        _dbSet.Update(entity);
         await _context.SaveChangesAsync();
     }
     public async Task DeleteRangeAndSaveAsync(T[] entities)
     {
         _dbSet.RemoveRange(entities);
-
         await _context.SaveChangesAsync();
     }
 }
-
