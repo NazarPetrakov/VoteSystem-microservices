@@ -484,3 +484,4 @@ $RECYCLE.BIN/
 *.swp
 
 *app
+src/Services/NotificationService/NotificationService.API/appsettings.Development.json

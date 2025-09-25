@@ -1,4 +1,4 @@
-namespace NotificationService.API.Settigns;
+namespace NotificationService.API.Settings;
 
 public class MongoDbSettings
 {
