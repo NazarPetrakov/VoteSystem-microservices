@@ -1,0 +1,27 @@
+<div class="collapse border-base-300 border">
+  <input type="checkbox" [ngModel]="isDropped" (ngModelChange)="dropEvent()" />
+  <div
+    class="collapse-title font-semibold bg-base-200 text-primary flex flex-col"
+  >
+    <div>{{ title }}</div>
+    <div class="text-accent font-mono">{{ description }}</div>
+  </div>
+  <div class="collapse-content text-sm">
+    <form class="p-3 text-primary-content">
+      <div class="flex flex-col gap-3 min-h-14">
+        @for (item of options; track item.id) {
+        <div class="flex gap-4">
+          <input id="" type="radio" name="radio-9" class="radio radio-info" />
+          <label for="">{{ item.text }}</label>
+        </div>
+        }
+      </div>
+      <button class="btn btn-primary my-2 min-w-25">Vote</button>
+    </form>
+    <div class="flex justify-between">
+      <div>{{ createdTime | date : "dd/MM/yyyy" }}</div>
+      <div>by {{ author }}</div>
+    </div>
+    <ngx-spinner [name]="'poll-' + id"></ngx-spinner>
+  </div>
+</div>

@@ -1,0 +1,14 @@
+<div class="bg-neutral min-h-124 text-white p-6 flex flex-wrap min-w-16 gap-2">
+  @for (item of polls(); track item.id) { @if (!item.isClosed) {
+  <app-poll
+    [id]="item.id"
+    [title]="item.title"
+    [description]="item.description"
+    [author]="item.createdByUserId"
+    [createdTime]="item.createdTime"
+    [options]="item.pollOptions"
+    (drop)="loadOptions(item.id)"
+  ></app-poll>
+  } }
+</div>
+<div>footer</div>
