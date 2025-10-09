@@ -484,3 +484,4 @@ $RECYCLE.BIN/
 *.swp
 
 *app
+src/Services/AuthService/AuthService.API/appsettings.json
