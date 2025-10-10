@@ -24,6 +24,7 @@ public static class ServiceCollectionExtensions
             configure.AddConsumer<PollCreatedConsumer>();
             configure.AddConsumer<PollDeletedConsumer>();
             configure.AddConsumer<PollOptionDeletedConsumer>();
+            configure.AddConsumer<UserCreatedConsumer>();
 
             configure.UsingRabbitMq((context, cfg) =>
             {

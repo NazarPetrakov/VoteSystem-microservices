@@ -8,6 +8,7 @@ public class VoteDbContext(DbContextOptions<VoteDbContext> options) : DbContext(
     public DbSet<Vote> Votes { get; set; }
     public DbSet<PollCache> PollsCache { get; set; }
     public DbSet<PollOptionCache> PollOptionsCache { get; set; }
+    public DbSet<UserCache> Users { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
