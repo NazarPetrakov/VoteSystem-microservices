@@ -8,4 +8,5 @@ public class PollDbContext(DbContextOptions<PollDbContext> options)
 {
     public DbSet<Poll> Polls { get; set; }
     public DbSet<PollOption> PollOptions { get; set; }
+    public DbSet<UserCache> Users { get; set; }
 }

@@ -10,7 +10,7 @@ public static class PollDtoExtensions
         return new PollResponse(poll.Id,
             poll.Title,
             poll.Description,
-            poll.CreatedByUserId,
+            poll.UserId,
             poll.IsClosed,
             poll.CreatedAt,
             poll.UpdatedAt,
@@ -22,7 +22,7 @@ public static class PollDtoExtensions
         {
             Title = pollCreate.Title,
             Description = pollCreate.Description,
-            CreatedByUserId = pollCreate.CreatedByUserId,
+            UserId = pollCreate.UserId,
             IsClosed = pollCreate.IsClosed,
         };
     }
@@ -33,7 +33,7 @@ public static class PollDtoExtensions
             Id = pollUpdate.Id,
             Title = pollUpdate.Title ?? existedPoll.Title,
             Description = pollUpdate.Description ?? existedPoll.Description,
-            CreatedByUserId = pollUpdate.CreatedByUserId ?? existedPoll.CreatedByUserId,
+            UserId = pollUpdate.UserId ?? existedPoll.UserId,
             IsClosed = pollUpdate.IsClosed ?? existedPoll.IsClosed,
             CreatedAt = existedPoll.CreatedAt,
             UpdatedAt = DateTimeOffset.UtcNow

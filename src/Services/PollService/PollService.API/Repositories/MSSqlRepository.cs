@@ -4,8 +4,7 @@ using PollService.API.Data;
 
 namespace PollService.API.Repositories;
 
-public class MSSqlRepository<T, TId>(PollDbContext context)
-    : MSSqlRepository<T, PollDbContext, TId>(context)
-    where T : BaseEntity<TId>
+public class MSSqlRepository<T, TId>(PollDbContext context) : MSSqlRepository<T, PollDbContext, TId>(context)
+    where T : class, IEntity<TId>
     where TId : IEquatable<TId>
 { }

@@ -10,6 +10,7 @@ namespace PollService.API.Orchestrators;
 
 public class PollOrchestrator(IRepository<Poll, Guid> pollRepository,
     IRepository<PollOption, Guid> pollOptionRepository,
+    IRepository<UserCache, int> userRepository,
     IPollPublisher pollPublisher) : IPollOrchestrator
 {
     public async Task<Result<List<PollResponse>>> GetAllAsync()
@@ -32,10 +33,13 @@ public class PollOrchestrator(IRepository<Poll, Guid> pollRepository,
         int order = 1;
         var poll = createPollRequest.ToEntity();
 
+        var user = await userRepository.GetAsync(poll.UserId);
+        if (user is null)
+            return Result.Failure<PollResponse>(AuthErrors.UserNotFound);
+
         await pollRepository.CreateAndSaveAsync(poll);
 
         // Creating options for poll
-
         if (createPollRequest.pollOptionsToCreate != null &&
             createPollRequest.pollOptionsToCreate.Count != 0)
         {
