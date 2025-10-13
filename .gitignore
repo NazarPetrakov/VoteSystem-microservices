@@ -485,3 +485,4 @@ $RECYCLE.BIN/
 
 *app
 src/Services/AuthService/AuthService.API/appsettings.json
+src/Services/PollService/PollService.API/appsettings.json

@@ -1,4 +1,6 @@
+using Common.Contracts.User;
 using Common.Result;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PollService.API.Helpers;
 using PollService.API.Interfaces;
@@ -29,6 +31,7 @@ namespace PollService.API.Controllers
                 onFailure: NotFound
             );
         }
+        [Authorize(Roles = Roles.Member)]
         [HttpPost]
         public async Task<ActionResult<PollResponse>> Create(CreatePollRequest createPollRequest,
             CancellationToken cancellationToken)
@@ -40,6 +43,7 @@ namespace PollService.API.Controllers
                 onFailure: BadRequest
             );
         }
+        [Authorize(Roles = Roles.Member)]
         [HttpPut]
         public async Task<ActionResult> Update(UpdatePollRequest updatePollRequest)
         {
@@ -50,6 +54,7 @@ namespace PollService.API.Controllers
                 onFailure: BadRequest
             );
         }
+        [Authorize(Roles = Roles.Admin)]
         [HttpPatch("{id}/close")]
         public async Task<ActionResult> ClosePoll(Guid id)
         {
@@ -60,6 +65,7 @@ namespace PollService.API.Controllers
                     onFailure: BadRequest
                 );
         }
+        [Authorize(Roles = Roles.Member)]
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {

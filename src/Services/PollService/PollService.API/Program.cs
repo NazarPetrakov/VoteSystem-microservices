@@ -9,7 +9,8 @@ builder.Services.AddControllers();
 builder.Services
     .AddPollDbContext(configuration)
     .AddServices()
-    .AddMassTransitOptions(configuration)
+    .AddCommonOptions(configuration)
+    .AddAppAuthentication(configuration)
     .AddMassTransitWithRabbitMq();
 
 builder.Services.AddEndpointsApiExplorer();
