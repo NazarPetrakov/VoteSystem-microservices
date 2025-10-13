@@ -1,9 +1,9 @@
 using AuthService.API.Data;
 using AuthService.API.Interfaces;
 using AuthService.API.Models;
-using AuthService.API.Options;
 using AuthService.API.Orchestrators;
 using AuthService.API.Publishers;
+using Common.Options;
 using MassTransit;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -13,15 +13,6 @@ namespace AuthService.API.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddAppOptions(this IServiceCollection services, IConfiguration configuration)
-    {
-        services.Configure<JwtOptions>(configuration
-            .GetSection(JwtOptions.SectionName));
-        services.Configure<RabbitMqOptions>(configuration
-            .GetSection(RabbitMqOptions.SectionName));
-
-        return services;
-    }
     public static IServiceCollection AddAppServices(this IServiceCollection services)
     {
         services.AddScoped<IAuthOrchestrator, AuthOrchestrator>();

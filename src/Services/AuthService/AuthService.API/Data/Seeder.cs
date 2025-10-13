@@ -1,4 +1,5 @@
 using AuthService.API.Models;
+using Common.Contracts.User;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 

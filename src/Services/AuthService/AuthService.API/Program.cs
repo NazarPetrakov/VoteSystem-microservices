@@ -1,5 +1,6 @@
 using AuthService.API.Data;
 using AuthService.API.Extensions;
+using Common.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,7 +14,7 @@ builder.Services.AddControllers()
     });
 
 builder.Services
-    .AddAppOptions(configuration)
+    .AddCommonOptions(configuration)
     .AddIdentityDb(configuration)
     .AddAppServices();
 

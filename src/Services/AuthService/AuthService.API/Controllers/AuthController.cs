@@ -1,8 +1,9 @@
 using AuthService.API.Dtos;
-using AuthService.API.Extensions;
 using AuthService.API.Interfaces;
 using AuthService.API.Models;
+using Common.Contracts.User;
 using Common.Errors;
+using Common.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 

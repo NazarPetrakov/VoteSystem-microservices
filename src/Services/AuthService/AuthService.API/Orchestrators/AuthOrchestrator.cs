@@ -2,7 +2,7 @@ using System.Security.Claims;
 using System.Text;
 using AuthService.API.Interfaces;
 using AuthService.API.Models;
-using AuthService.API.Options;
+using Common.Options;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
