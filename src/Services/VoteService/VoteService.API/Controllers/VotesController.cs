@@ -1,4 +1,6 @@
+using Common.Contracts.User;
 using Common.Result;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VoteService.API.Contracts.Dtos;
 using VoteService.API.Interfaces;
@@ -10,6 +12,7 @@ namespace VoteService.API.Controllers
     public class VotesController(IVoteOrchestrator voteOrchestrator) : ControllerBase
     {
         [HttpGet]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult<List<VoteResponse>>> GetVotes()
         {
             var votesResult = await voteOrchestrator.GetAllAsync();
@@ -20,6 +23,7 @@ namespace VoteService.API.Controllers
                 onFailure: NotFound
             );
         }
+        [Authorize(Roles = Roles.Member)]
         [HttpGet("{id}")]
         public async Task<ActionResult<VoteResponse>> GetVote(Guid id)
         {
@@ -31,6 +35,7 @@ namespace VoteService.API.Controllers
                 onFailure: NotFound
             );
         }
+        [Authorize(Roles = Roles.Member)]
         [HttpPost]
         public async Task<ActionResult<VoteResponse>> CreateVote(CreateVoteRequest createVoteRequest)
         {
@@ -42,6 +47,7 @@ namespace VoteService.API.Controllers
                 onFailure: BadRequest
             );
         }
+        [Authorize(Roles = Roles.Member)]
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteVote(Guid id)
         {

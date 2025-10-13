@@ -9,8 +9,9 @@ builder.Services
     .AddServices()
     .AddMSSqlDb<VoteDbContext>(
         configuration.GetConnectionString("DefaultConnection"))
-    .AddMassTransitOptions(configuration)
-    .AddMassTransitWithRabbitMq();
+    .AddCommonOptions(configuration)
+    .AddMassTransitWithRabbitMq()
+    .AddAppAuthentication(configuration);
 
 builder.Services.AddControllers();
 
