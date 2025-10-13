@@ -12,7 +12,7 @@ using VoteService.API.Data;
 namespace VoteService.API.Data.Migrations
 {
     [DbContext(typeof(VoteDbContext))]
-    [Migration("20251010123643_AddUserCacheMigration")]
+    [Migration("20251013084314_AddUserCacheMigration")]
     partial class AddUserCacheMigration
     {
         /// <inheritdoc />
@@ -58,10 +58,7 @@ namespace VoteService.API.Data.Migrations
             modelBuilder.Entity("VoteService.API.Models.UserCache", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("UserName")
                         .IsRequired()

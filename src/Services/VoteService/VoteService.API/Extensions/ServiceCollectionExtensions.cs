@@ -15,7 +15,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddMassTransit(configure =>
         {
-            configure.SetKebabCaseEndpointNameFormatter();
+            configure.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("voteservice", false));
 
             configure.AddConsumer<PollOptionCreatedConsumer>(c =>
             {
