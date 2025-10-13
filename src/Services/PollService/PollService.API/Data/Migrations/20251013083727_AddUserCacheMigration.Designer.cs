@@ -12,8 +12,8 @@ using PollService.API.Data;
 namespace PollService.API.Data.Migrations
 {
     [DbContext(typeof(PollDbContext))]
-    [Migration("20251010113128_AddUserMigration")]
-    partial class AddUserMigration
+    [Migration("20251013083727_AddUserCacheMigration")]
+    partial class AddUserCacheMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -90,10 +90,7 @@ namespace PollService.API.Data.Migrations
             modelBuilder.Entity("PollService.API.Models.UserCache", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("UserName")
                         .IsRequired()

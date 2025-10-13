@@ -87,10 +87,7 @@ namespace PollService.API.Data.Migrations
             modelBuilder.Entity("PollService.API.Models.UserCache", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("UserName")
                         .IsRequired()

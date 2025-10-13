@@ -18,7 +18,8 @@ public static class ServiceCollectionExtensions
     {
         services.AddMassTransit(configure =>
         {
-            configure.SetKebabCaseEndpointNameFormatter();
+            configure.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("pollservice", false));
+
             configure.AddConsumer<UserCreatedConsumer>();
             configure.UsingRabbitMq((context, cfg) =>
             {
