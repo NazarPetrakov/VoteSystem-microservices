@@ -2,7 +2,7 @@ namespace Common.Result;
 
 public class Result<T> : Result
 {
-    public Result(bool isSuccess, Error error, T? data) : base(isSuccess, error)
+    public Result(bool isSuccess, List<Error> errors, T? data) : base(isSuccess, errors)
     {
         Data = data;
     }
@@ -10,20 +10,20 @@ public class Result<T> : Result
 }
 public class Result
 {
-    protected Result(bool isSuccess, Error error)
+    protected Result(bool isSuccess, List<Error> errors)
     {
         IsSuccess = isSuccess;
-        Error = error;
+        Errors = errors;
     }
 
     public bool IsSuccess { get; }
-    public Error Error { get; }
+    public List<Error> Errors { get; }
 
-    public static Result Success() => new(true, Error.None);
+    public static Result Success() => new(true, new());
+    public static Result Failure(Error error) => new(false, new() { error });
+    public static Result Failure(IEnumerable<Error> errors) => new(false, errors.ToList());
 
-    public static Result Failure(Error error) => new(false, error);
-
-    public static Result<T> Success<T>(T data) => new(true, Error.None, data);
-
-    public static Result<T> Failure<T>(Error error) => new(false, error, default);
+    public static Result<T> Success<T>(T data) => new(true, new(), data);
+    public static Result<T> Failure<T>(Error error) => new(false, new() { error }, default);
+    public static Result<T> Failure<T>(IEnumerable<Error> errors) => new(false, errors.ToList(), default);
 }
