@@ -9,7 +9,8 @@ builder.Services.AddControllers();
 builder.Services
     .AddPollDbContext(configuration)
     .AddServices()
-    .AddMassTransitOptions(configuration)
+    .AddCommonOptions(configuration)
+    .AddAppAuthentication(configuration)
     .AddMassTransitWithRabbitMq();
 
 builder.Services.AddEndpointsApiExplorer();
@@ -25,6 +26,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors(c =>
+{
+    c.AllowAnyHeader().AllowCredentials().AllowAnyMethod().WithOrigins("http://localhost:4200");
+});
 app.UseAuthorization();
 
 app.MapControllers();

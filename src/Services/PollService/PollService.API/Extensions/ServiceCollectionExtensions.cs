@@ -3,6 +3,7 @@ using Common.Repositories;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using PollService.API.Consumers;
 using PollService.API.Data;
 using PollService.API.Interfaces;
 using PollService.API.Orchestrators;
@@ -17,8 +18,9 @@ public static class ServiceCollectionExtensions
     {
         services.AddMassTransit(configure =>
         {
-            configure.SetKebabCaseEndpointNameFormatter();
+            configure.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("pollservice", false));
 
+            configure.AddConsumer<UserCreatedConsumer>();
             configure.UsingRabbitMq((context, cfg) =>
             {
                 var rabbitMqOptions = context.GetRequiredService<IOptions<RabbitMqOptions>>().Value;
