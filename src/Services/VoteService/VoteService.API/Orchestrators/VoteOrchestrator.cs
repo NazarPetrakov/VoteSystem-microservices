@@ -11,6 +11,7 @@ namespace VoteService.API.Orchestrators;
 
 public class VoteOrchestrator(IRepository<Vote, Guid> voteRepository,
     IRepository<PollCache, Guid> pollRepository,
+    IRepository<UserCache, int> userRepository,
     IRepository<PollOptionCache, Guid> pollOptionRepository) : IVoteOrchestrator
 {
     public async Task<Result<List<VoteResponse>>> GetAllAsync()
@@ -30,6 +31,10 @@ public class VoteOrchestrator(IRepository<Vote, Guid> voteRepository,
     }
     public async Task<Result<VoteResponse>> CreateAsync(CreateVoteRequest createVoteRequest)
     {
+        var user = await userRepository.GetAsync(createVoteRequest.UserId);
+        if (user == null)
+            return Result.Failure<VoteResponse>(AuthErrors.UserNotFound);
+            
         var poll = await pollRepository.GetAsync(createVoteRequest.PollId);
         var pollOption = await pollOptionRepository.GetAsync(createVoteRequest.PollOptionId);
 

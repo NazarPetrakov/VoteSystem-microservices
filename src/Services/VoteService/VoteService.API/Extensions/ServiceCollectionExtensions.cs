@@ -15,7 +15,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddMassTransit(configure =>
         {
-            configure.SetKebabCaseEndpointNameFormatter();
+            configure.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("voteservice", false));
 
             configure.AddConsumer<PollOptionCreatedConsumer>(c =>
             {
@@ -24,6 +24,7 @@ public static class ServiceCollectionExtensions
             configure.AddConsumer<PollCreatedConsumer>();
             configure.AddConsumer<PollDeletedConsumer>();
             configure.AddConsumer<PollOptionDeletedConsumer>();
+            configure.AddConsumer<UserCreatedConsumer>();
 
             configure.UsingRabbitMq((context, cfg) =>
             {
