@@ -2,72 +2,49 @@ using AuthService.API.Dtos;
 using AuthService.API.Interfaces;
 using AuthService.API.Models;
 using Common.Contracts.User;
-using Common.Errors;
-using Common.Extensions;
-using Microsoft.AspNetCore.Identity;
+using Common.Result;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuthService.API.Controllers
 {
     [Route("api/auth")]
     [ApiController]
-    public class AuthController(IAuthOrchestrator authOrchestrator,
-        IUserPublisher userPublisher,
-        UserManager<AppUser> userManager) : ControllerBase
+    public class AuthController(IAuthOrchestrator authOrchestrator) : ControllerBase
     {
         [HttpPost("register")]
-        public async Task<IActionResult> Register(UserRegisterRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> RegisterMember(UserRegisterRequest request, CancellationToken cancellationToken)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState.GetErrors());
-            }
+            var result = await authOrchestrator.RegisterUserAsync(request, false, ModelState, cancellationToken);
 
-            var existingUser = await userManager.FindByNameAsync(request.UserName);
-            if (existingUser is not null)
-            {
-                return BadRequest(AuthErrors.UserAlreadyExists);
-            }
+            return result.Match<UserToken, IActionResult>
+            (
+                onSuccess: Ok,
+                onFailure: BadRequest
+            );
+        }
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin)]
+        [HttpPost("register/admin")]
+        public async Task<IActionResult> RegisterAdmin(UserRegisterRequest request, CancellationToken cancellationToken)
+        {
+            var result = await authOrchestrator.RegisterUserAsync(request, true, ModelState, cancellationToken);
 
-            var user = new AppUser
-            {
-                UserName = request.UserName,
-                Email = request.Email,
-            };
-
-            var result = await userManager.CreateAsync(user, request.Password);
-            if (!result.Succeeded)
-            {
-                return BadRequest(result.Errors);
-            }
-
-            var addToRoleResult = await userManager.AddToRoleAsync(user, Roles.Member);
-            if (!addToRoleResult.Succeeded)
-            {
-                return BadRequest(addToRoleResult.Errors);
-            }
-
-            await userPublisher.NotifyUserCreatedAsync(user, cancellationToken);
-
-            string token = authOrchestrator.GenerateJwtToken(user);
-
-            return Ok(new UserToken(user.UserName, token));
+            return result.Match<UserToken, IActionResult>
+            (
+                onSuccess: Ok,
+                onFailure: BadRequest
+            );
         }
         [HttpPost("login")]
-        public async Task<ActionResult> Login(UserLoginRequest request)
+        public async Task<IActionResult> Login(UserLoginRequest request)
         {
-            var user = await userManager.FindByNameAsync(request.UserName);
+            var result = await authOrchestrator.LoginUserAsync(request);
 
-            if (user is null || !await userManager.CheckPasswordAsync(user, request.Password))
-            {
-                return Unauthorized();
-            }
-
-            var roles = await userManager.GetRolesAsync(user);
-
-            string token = authOrchestrator.GenerateJwtToken(user, roles);
-
-            return Ok(new UserToken(user.UserName!, token));
+            return result.Match<UserToken, IActionResult>
+            (
+                onSuccess: Ok,
+                onFailure: Unauthorized
+            );
         }
     }
 }

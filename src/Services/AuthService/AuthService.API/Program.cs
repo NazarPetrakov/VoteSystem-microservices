@@ -14,9 +14,10 @@ builder.Services.AddControllers()
     });
 
 builder.Services
-    .AddCommonOptions(configuration)
     .AddIdentityDb(configuration)
-    .AddAppServices();
+    .AddCommonOptions(configuration)
+    .AddAppServices()
+    .AddAppAuthentication(configuration);
 
 var app = builder.Build();
 
