@@ -26,7 +26,7 @@ public class AuthOrchestrator(IOptions<JwtOptions> jwtOptions,
 
         if (user is null || !await userManager.CheckPasswordAsync(user, request.Password))
         {
-            return Result.Failure<UserToken>(Error.None);
+            return Result.Failure<UserToken>(AuthErrors.InvalidCredentials);
         }
 
         var roles = await userManager.GetRolesAsync(user);
