@@ -8,7 +8,7 @@ public interface IRepository<T, TId>
     where TId : IEquatable<TId>
 {
     Task<ICollection<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null);
-    Task<T?> GetAsync(TId id, Expression<Func<T, object>>? include = null);
+    Task<T?> GetAsync(TId id, params Expression<Func<T, object>>[] includes);
     Task<T> CreateAndSaveAsync(T entity);
     Task UpdateAndSaveAsync(T entity);
     Task DeleteAndSaveAsync(T entity);

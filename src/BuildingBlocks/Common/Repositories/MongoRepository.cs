@@ -28,7 +28,7 @@ public class MongoRepository<T, TContext, TId> : IRepository<T, TId>
 
         return await query.ToListAsync();
     }
-    public async Task<T?> GetAsync(TId id, Expression<Func<T, object>>? include = null)
+    public async Task<T?> GetAsync(TId id, params Expression<Func<T, object>>[] includes)
     {
         return await _dbSet.AsNoTracking().FirstOrDefaultAsync(p => p.Id.Equals(id));
     }

@@ -28,11 +28,19 @@ public class MSSqlRepository<T, TContext, TId> : IRepository<T, TId>
 
         return await query.ToListAsync();
     }
-    public async Task<T?> GetAsync(TId id, Expression<Func<T, object>>? include = null)
+    public async Task<T?> GetAsync(TId id, params Expression<Func<T, object>>[] includes)
     {
-        return include == null
-            ? await _dbSet.AsNoTracking().FirstOrDefaultAsync(p => p.Id.Equals(id))
-            : await _dbSet.Include(include).AsNoTracking().FirstOrDefaultAsync(p => p.Id.Equals(id));
+        var query = _dbSet.AsQueryable();
+
+        if (includes != null && includes.Length > 0)
+        {
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+        }
+
+        return await query.AsNoTracking().FirstOrDefaultAsync(p => p.Id.Equals(id));
     }
     public async Task<T> CreateAndSaveAsync(T entity)
     {
