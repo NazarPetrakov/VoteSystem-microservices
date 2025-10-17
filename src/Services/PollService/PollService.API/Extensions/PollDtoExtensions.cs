@@ -11,6 +11,7 @@ public static class PollDtoExtensions
             poll.Title,
             poll.Description,
             poll.UserId,
+            poll.User?.UserName ?? "",
             poll.IsClosed,
             poll.CreatedAt,
             poll.UpdatedAt,
