@@ -33,7 +33,7 @@ public class AuthOrchestrator(IOptions<JwtOptions> jwtOptions,
 
         string token = GenerateJwtToken(user, roles);
 
-        return Result.Success(new UserToken(user.UserName!, token));
+        return Result.Success(new UserToken(user.Id, user.UserName!, token));
     }
     public async Task<Result<UserToken>> RegisterUserAsync(UserRegisterRequest request,
         bool isAdmin,
@@ -82,7 +82,7 @@ public class AuthOrchestrator(IOptions<JwtOptions> jwtOptions,
 
         string token = GenerateJwtToken(user, roles);
 
-        return Result.Success(new UserToken(user.UserName, token));
+        return Result.Success(new UserToken(user.Id, user.UserName, token));
     }
     public string GenerateJwtToken(AppUser user, IList<string>? roles = null)
     {
