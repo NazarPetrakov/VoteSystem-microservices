@@ -23,6 +23,11 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 
+app.UseCors(c =>
+{
+    c.AllowAnyHeader().AllowCredentials().AllowAnyMethod().WithOrigins("http://localhost:4200");
+});
+
 app.UseAuthentication();
 app.UseAuthorization();
 
