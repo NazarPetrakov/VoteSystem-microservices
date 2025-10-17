@@ -40,7 +40,7 @@ export class PollService {
       .pipe(
         //only for development
         delay(1000),
-        
+
         tap((poll) => {
           console.log('Loaded poll options for', poll.id);
           this.polls.update((polls) => {
@@ -50,6 +50,7 @@ export class PollService {
               updated[index] = {
                 ...updated[index],
                 pollOptions: poll.pollOptions,
+                userName: poll.userName,
               };
               return updated;
             }

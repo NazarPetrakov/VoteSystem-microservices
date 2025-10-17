@@ -20,7 +20,11 @@
     </form>
     <div class="flex justify-between">
       <div>{{ createdTime | date : "dd/MM/yyyy" }}</div>
-      <div>by {{ author }}</div>
+      <div>
+        by @if(author.length > 0){
+        {{ author }}
+        }@else{ anonymous }
+      </div>
     </div>
     <ngx-spinner [name]="'poll-' + id"></ngx-spinner>
   </div>

@@ -21,7 +21,7 @@ public class PollOrchestrator(IRepository<Poll, Guid> pollRepository,
     }
     public async Task<Result<PollResponse>> GetAsync(Guid id)
     {
-        var poll = await pollRepository.GetAsync(id, include: p => p.PollOptions);
+        var poll = await pollRepository.GetAsync(id, p => p.PollOptions, p => p.User);
 
         if (poll == null)
             return Result.Failure<PollResponse>(PollErrors.NotFound(id));

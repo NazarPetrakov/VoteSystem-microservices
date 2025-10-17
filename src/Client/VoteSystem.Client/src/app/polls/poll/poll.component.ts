@@ -16,7 +16,7 @@ export class PollComponent {
   @Input() title = '';
   @Input() description = '';
   @Input() createdTime!: Date;
-  @Input() author!: number;
+  @Input() author!: string;
   @Input() options: PollOption[] = [];
   @Output() drop = new EventEmitter();
 
