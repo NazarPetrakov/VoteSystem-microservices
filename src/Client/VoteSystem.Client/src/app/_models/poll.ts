@@ -2,7 +2,7 @@ export interface Poll {
   id: string;
   title: string;
   description: string;
-  createdByUserId: number;
+  userId: number;
   isClosed: boolean;
   createdTime: Date;
   updatedTime: Date;

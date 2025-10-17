@@ -1,0 +1,21 @@
+<div class="flex flex-col">
+  <label [for]="id" [class]="labelClass">{{ label }}: </label>
+  <input
+    [id]="id"
+    [placeholder]="placeholder"
+    type="text"
+    [class]="inputClass"
+    [formControl]="control"
+  />
+
+  @if(control.invalid && (control.touched || control.dirty)){
+  @if(control.hasError('required')){
+  <p class="text-error">{{ label }} is required</p>
+  } @if(control.hasError('email')){
+  <p class="text-error">{{ label }} is not valid</p>
+  } @if(control.hasError('minlength')){
+  <p class="text-error">Min length of {{ label }} is {{ minLength }}</p>
+  } @if(control.hasError('maxlength')){
+  <p class="text-error">Min length of {{ label }} is {{ maxLength }}</p>
+  }}
+</div>

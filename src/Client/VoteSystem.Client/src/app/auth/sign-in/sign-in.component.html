@@ -1,1 +1,33 @@
-<p>sign-in works!</p>
+<div class="flex bg-neutral justify-center min-h-84 items-center">
+  <form
+    class="flex flex-col gap-4 text-white"
+    [formGroup]="loginForm"
+    (submit)="login()"
+  >
+    <div class="flex justify-center text-2xl font-bold">Sign in</div>
+    <app-form-input
+      label="Username"
+      id="userName"
+      [minLength]="4"
+      [maxLength]="256"
+      [control]="userNameControl"
+      placeholder="Username"
+      inputClass="bg-gray-300 text-black p-1 rounded-md"
+    ></app-form-input>
+    <app-form-input
+      label="Password"
+      id="password"
+      [minLength]="6"
+      [maxLength]="64"
+      [control]="passwordControl"
+      inputClass="bg-gray-300 text-black p-1 rounded-md"
+      placeholder="Password"
+    ></app-form-input>
+    <button
+      [disabled]="!loginForm.valid"
+      class="btn btn-primary disabled:cursor-not-allowed disabled:text-white disabled:border-blue-500/30"
+    >
+      Login
+    </button>
+  </form>
+</div>
