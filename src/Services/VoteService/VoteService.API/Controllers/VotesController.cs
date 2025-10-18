@@ -23,6 +23,18 @@ namespace VoteService.API.Controllers
                 onFailure: NotFound
             );
         }
+        [HttpGet("by-user/{userId}")]
+        [Authorize(Roles = Roles.Member)]
+        public async Task<ActionResult<List<VoteResponse>>> GetUserVotes(int userId)
+        {
+            var votesResult = await voteOrchestrator.GetAllAsync(v => v.UserId == userId);
+
+            return votesResult.Match<List<VoteResponse>, ActionResult>
+            (
+                onSuccess: Ok,
+                onFailure: NotFound
+            );
+        }
         [Authorize(Roles = Roles.Member)]
         [HttpGet("{id}")]
         public async Task<ActionResult<VoteResponse>> GetVote(Guid id)

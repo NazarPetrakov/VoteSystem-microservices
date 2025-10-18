@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Common.Errors;
 using Common.Repositories;
 using Common.Result;
@@ -14,9 +15,9 @@ public class VoteOrchestrator(IRepository<Vote, Guid> voteRepository,
     IRepository<UserCache, int> userRepository,
     IRepository<PollOptionCache, Guid> pollOptionRepository) : IVoteOrchestrator
 {
-    public async Task<Result<List<VoteResponse>>> GetAllAsync()
+    public async Task<Result<List<VoteResponse>>> GetAllAsync(Expression<Func<Vote, bool>>? filter = null)
     {
-        var votes = await voteRepository.GetAllAsync();
+        var votes = await voteRepository.GetAllAsync(filter);
 
         return Result.Success(votes.Select(v => v.ToDto()).ToList());
     }
@@ -34,7 +35,7 @@ public class VoteOrchestrator(IRepository<Vote, Guid> voteRepository,
         var user = await userRepository.GetAsync(createVoteRequest.UserId);
         if (user == null)
             return Result.Failure<VoteResponse>(AuthErrors.UserNotFound);
-            
+
         var poll = await pollRepository.GetAsync(createVoteRequest.PollId);
         var pollOption = await pollOptionRepository.GetAsync(createVoteRequest.PollOptionId);
 
