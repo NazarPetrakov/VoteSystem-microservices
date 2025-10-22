@@ -1,4 +1,5 @@
 using Common.Extensions;
+using Common.Middlewares;
 using PollService.API.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,6 +31,9 @@ app.UseCors(c =>
 {
     c.AllowAnyHeader().AllowCredentials().AllowAnyMethod().WithOrigins("http://localhost:4200");
 });
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 app.UseAuthorization();
 
 app.MapControllers();
