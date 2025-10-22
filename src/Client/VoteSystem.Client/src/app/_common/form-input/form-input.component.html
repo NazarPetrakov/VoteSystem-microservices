@@ -10,7 +10,9 @@
 
   @if(control.invalid && (control.touched || control.dirty)){
   @if(control.hasError('required')){
-  <p class="text-error">{{ label }} is required</p>
+  <p class="text-error p-1 mt-3 border border-red-200">
+    {{ label }} is required
+  </p>
   } @if(control.hasError('email')){
   <p class="text-error">{{ label }} is not valid</p>
   } @if(control.hasError('minlength')){

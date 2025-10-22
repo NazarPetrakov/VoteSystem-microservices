@@ -17,8 +17,6 @@ export class PollService {
   loadPolls() {
     return this.client.get<Poll[]>(`${this.baseUrl}polls`).pipe(
       tap((polls) => {
-        console.log('Loaded polls');
-
         if (this.polls().length === 0) {
           this.polls.set(polls);
         }

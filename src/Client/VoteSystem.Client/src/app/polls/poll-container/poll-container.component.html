@@ -1,16 +1,20 @@
-<div class="bg-neutral min-h-124 text-white p-6 flex flex-wrap min-w-16 gap-2">
-  @if(polls().length <= 0){
-  <app-poll title="poll title" description="poll description"></app-poll>
-  } @for (item of polls(); track item.id) { @if (!item.isClosed) {
+<div class="p-6 flex flex-wrap min-w-16 min-h-124 gap-2">
+  @if(isPollsLoaded() && isVotesLoaded()){ @for (item of polls(); track item.id)
+  { @if (!item.isClosed) {
   <app-poll
-    [id]="item.id"
+    [pollId]="item.id"
     [title]="item.title"
     [description]="item.description"
     [author]="item.userName"
     [createdTime]="item.createdTime"
     [options]="item.pollOptions"
+    [votedOptionId]="getVotedOptionId(item.id)"
     (drop)="loadOptions(item.id)"
+    (vote)="vote($event)"
+    (cancel)="cancelVote($event)"
   ></app-poll>
+  } }@empty {
+  <div class="p-8">No polls yet!</div>
   } }
 </div>
 <div>footer</div>

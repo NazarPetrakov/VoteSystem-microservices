@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { NavigationComponent } from './navigation/navigation.component';
 import { NgxSpinnerComponent } from 'ngx-spinner';
 import { RouterOutlet } from '@angular/router';
@@ -10,6 +10,7 @@ import { UserToken } from './_models/userToken';
   imports: [NavigationComponent, NgxSpinnerComponent, RouterOutlet],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent implements OnInit {
   private authService = inject(AuthService);

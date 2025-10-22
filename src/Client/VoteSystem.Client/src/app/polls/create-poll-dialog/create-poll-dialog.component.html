@@ -1,0 +1,77 @@
+<h2 mat-dialog-title>Create poll</h2>
+<mat-dialog-content class="mat-typography">
+  <form [formGroup]="createPollForm">
+    <app-form-input
+      label="Title"
+      id="title"
+      [minLength]="2"
+      [maxLength]="128"
+      [control]="titleControl"
+      placeholder="Title"
+      inputClass="input"
+      labelClass="fieldset-legend"
+    ></app-form-input>
+
+    <div>
+      <legend class="fieldset-legend">Topic</legend>
+      <mat-form-field>
+        <mat-label>Topic</mat-label>
+        <mat-select [formControl]="topicControl">
+          <mat-option>-- None --</mat-option>
+          @for (group of topicGroups; track group) {
+          <mat-optgroup [label]="group.name">
+            @for (topic of group.topics; track topic) {
+            <mat-option [value]="topic.value">{{
+              topic.viewValue
+            }}</mat-option>
+            }
+          </mat-optgroup>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div formArrayName="options">
+      @for(option of formOptions.controls; let i = $index; track option) {
+      <legend class="fieldset-legend">Option {{ i + 1 }}</legend>
+      <label class="input">
+        <input
+          class="grow"
+          [formControlName]="i"
+          [placeholder]="'Option ' + (i + 1)"
+        />
+        <button
+          class="btn btn-sm"
+          type="button"
+          (click)="removeOption(i)"
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+      </label>
+      @if(option.invalid && (option.touched || option.dirty)){
+      @if(option.hasError('required')){
+      <p class="text-error p-1 mt-3 border border-red-200">Option {{ i + 1 }} is required</p>
+      } }}
+    </div>
+
+    <button type="button" class="btn btn-primary mt-3" (click)="addOption()">
+      Add option
+    </button>
+
+    @if(formOptions.invalid && (formOptions.touched || formOptions.dirty)){
+    @if(formOptions.hasError('minlength') || formOptions.hasError('required')){
+    <p class="text-error p-1 mt-3 border border-red-200">At least 2 options are required</p>
+    } }
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions class="flex gap-8">
+  <button class="btn btn-primary p-4" matButton mat-dialog-close>Cancel</button>
+  <button
+    class="btn btn-success p-4"
+    matButton
+    cdkFocusInitial
+    (click)="onSubmit()"
+  >
+    Create
+  </button>
+</mat-dialog-actions>

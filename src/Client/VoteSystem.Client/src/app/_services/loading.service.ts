@@ -11,8 +11,8 @@ export class LoadingService {
   loadingOn() {
     this.spinner.show('mainSpinner', {
       type: 'ball-fall',
-      bdColor: 'rgba(255,255,255,0)',
-      color: '#ffffff',
+      bdColor: 'rgba(0,0,0,0)',
+      color: 'rgb(6, 147, 255)',
     });
   }
 
