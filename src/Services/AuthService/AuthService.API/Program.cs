@@ -1,6 +1,7 @@
 using AuthService.API.Data;
 using AuthService.API.Extensions;
 using Common.Extensions;
+using Common.Middlewares;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,6 +28,8 @@ app.UseCors(c =>
 {
     c.AllowAnyHeader().AllowCredentials().AllowAnyMethod().WithOrigins("http://localhost:4200");
 });
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();
