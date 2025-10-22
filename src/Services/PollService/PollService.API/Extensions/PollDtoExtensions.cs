@@ -9,7 +9,7 @@ public static class PollDtoExtensions
     {
         return new PollResponse(poll.Id,
             poll.Title,
-            poll.Description,
+            poll.Topic,
             poll.UserId,
             poll.User?.UserName ?? "",
             poll.IsClosed,
@@ -22,7 +22,7 @@ public static class PollDtoExtensions
         return new Poll()
         {
             Title = pollCreate.Title,
-            Description = pollCreate.Description,
+            Topic = pollCreate.Topic,
             UserId = pollCreate.UserId,
             IsClosed = pollCreate.IsClosed,
         };
@@ -33,7 +33,7 @@ public static class PollDtoExtensions
         {
             Id = pollUpdate.Id,
             Title = pollUpdate.Title ?? existedPoll.Title,
-            Description = pollUpdate.Description ?? existedPoll.Description,
+            Topic = pollUpdate.Topic ?? existedPoll.Topic,
             UserId = pollUpdate.UserId ?? existedPoll.UserId,
             IsClosed = pollUpdate.IsClosed ?? existedPoll.IsClosed,
             CreatedAt = existedPoll.CreatedAt,
