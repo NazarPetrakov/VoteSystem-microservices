@@ -11,7 +11,7 @@ import {
   signal,
   SimpleChanges,
 } from '@angular/core';
-import { Poll, PollOption } from '../../_models/poll';
+import { PollOption } from '../../_models/poll';
 import {
   FormBuilder,
   FormsModule,
@@ -20,6 +20,7 @@ import {
 } from '@angular/forms';
 import { NgxSpinnerComponent } from 'ngx-spinner';
 import { MatIconModule } from '@angular/material/icon';
+import { TopicPipe } from '../../_pipes/topic.pipe';
 
 @Component({
   selector: 'app-poll',
@@ -29,6 +30,7 @@ import { MatIconModule } from '@angular/material/icon';
     NgxSpinnerComponent,
     ReactiveFormsModule,
     MatIconModule,
+    TopicPipe,
   ],
   templateUrl: './poll.component.html',
   styleUrl: './poll.component.css',
@@ -37,7 +39,7 @@ import { MatIconModule } from '@angular/material/icon';
 export class PollComponent implements OnChanges {
   @Input() pollId: string = '';
   @Input() title = '';
-  @Input() description = '';
+  @Input() topic = '';
   @Input() createdTime!: Date;
   @Input() author!: string;
   @Input() options: PollOption[] = [];

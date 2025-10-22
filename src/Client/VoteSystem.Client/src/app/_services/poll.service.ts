@@ -1,7 +1,7 @@
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../environments/environment.development';
-import { Poll } from '../_models/poll';
+import { CreatePollRequest, Poll } from '../_models/poll';
 import { delay, of, tap } from 'rxjs';
 import { SKIP_LOADING } from '../_interceptors/loading-context';
 
@@ -14,6 +14,17 @@ export class PollService {
 
   readonly polls = signal<Poll[]>([]);
 
+  createPoll(createPollRequest: CreatePollRequest) {
+    return this.client
+      .post<Poll>(`${this.baseUrl}polls`, createPollRequest)
+      .pipe(
+        tap((poll) => {
+          this.polls.update((polls) => {
+            return [...polls, poll];
+          });
+        })
+      );
+  }
   loadPolls() {
     return this.client.get<Poll[]>(`${this.baseUrl}polls`).pipe(
       tap((polls) => {

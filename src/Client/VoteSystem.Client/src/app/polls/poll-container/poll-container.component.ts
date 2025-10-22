@@ -10,15 +10,13 @@ import {
 import { PollComponent } from '../poll/poll.component';
 import { PollService } from '../../_services/poll.service';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { delay, finalize, subscribeOn } from 'rxjs';
+import { finalize } from 'rxjs';
 import { VoteService } from '../../_services/vote.service';
 import { AuthService } from '../../_services/auth.service';
 import { MatIconModule } from '@angular/material/icon';
 import { Vote } from '../../_models/vote';
 import { PollOption } from '../../_models/poll';
 import { CreateVoteRequest } from '../../_models/_contracts/vote/createVoteRequest';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { CreatePollDialogComponent } from '../create-poll-dialog/create-poll-dialog.component';
 
 @Component({
   selector: 'app-poll-container',

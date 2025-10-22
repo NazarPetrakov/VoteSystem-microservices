@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { CreatePollDialogComponent } from '../polls/create-poll-dialog/create-poll-dialog.component';
 import { PollService } from '../_services/poll.service';
+import { CreatePollRequest } from '../_models/poll';
 @Component({
   selector: 'app-navigation',
   imports: [RouterLink, MatIconModule, MatButtonModule, MatDialogModule],
@@ -18,15 +19,26 @@ export class NavigationComponent {
   authService = inject(AuthService);
   router = inject(Router);
 
-  createPoll() {
-    
-  }
-
   openDialog() {
     const dialogRef = this.dialog.open(CreatePollDialogComponent);
 
     dialogRef.afterClosed().subscribe((result) => {
-      console.log('dialog result', result);
+      const user = this.authService.currentUser();
+
+      if (!result || !user) return;
+
+      const createPoll = new CreatePollRequest(
+        result.title,
+        user.userId,
+        false,
+        result.options,
+        result.topic
+      );
+
+      this.pollService.createPoll(createPoll).subscribe({
+        next: () => console.log('Poll created successfully'),
+        error: (err) => console.error('Failed to create poll', err),
+      });
     });
   }
 

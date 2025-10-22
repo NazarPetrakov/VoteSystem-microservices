@@ -1,8 +1,5 @@
 <div
-  class="collapse border border-gray-300 rounded-lg shadow-sm flex-shrink-0
-  w-66 min-w-66 max-w-66
-  sm:w-80 sm:min-w-80 sm:max-w-80
-  xl:w-120 xl:min-w-120 xl:max-w-120"
+  class="collapse border border-gray-300 rounded-lg shadow-sm flex-shrink-0 w-66 min-w-66 max-w-66 sm:w-80 sm:min-w-80 sm:max-w-80 xl:w-120 xl:min-w-120 xl:max-w-120"
 >
   <input type="checkbox" [ngModel]="isDropped" (ngModelChange)="dropEvent()" />
 
@@ -13,67 +10,74 @@
       <div class="font-semibold text-lg line-clamp-2">{{ title }}</div>
 
       <div class="text-gray-500 font-mono text-sm line-clamp-4 mt-1">
-        {{ description }}
+        {{ topic | topic }}
       </div>
     </div>
 
     <div class="flex-shrink-0 ml-2">
       @if(isVoted()) {
-        <span class="badge badge-success badge-sm">Voted</span>
+      <span class="badge badge-success badge-sm">Voted</span>
       }
     </div>
   </div>
 
-  <div class="collapse-content text-gray-700 text-sm max-h-96 overflow-y-auto bg-gray-50 p-3 rounded-b-lg">
-    
+  <div
+    class="collapse-content text-gray-700 text-sm max-h-96 overflow-y-auto bg-gray-50 p-3 rounded-b-lg"
+  >
     @if(!isVoted()){
-      <form [formGroup]="pollForm" (submit)="voteEvent()">
-        <div class="flex flex-col gap-3 min-h-14">
-          @for (item of options; track item.id) {
-            <div class="flex gap-3 items-center">
-              <input
-                [id]="item.id"
-                type="radio"
-                formControlName="option"
-                [value]="item"
-                class="radio radio-info radio-sm"
-              />
-              <label [for]="item.id" class="text-sm break-words">{{ item.text }}</label>
-            </div>
-          }
+    <form [formGroup]="pollForm" (submit)="voteEvent()">
+      <div class="flex flex-col gap-3 min-h-14">
+        @for (item of options; track item.id) {
+        <div class="flex gap-3 items-center">
+          <input
+            [id]="item.id"
+            type="radio"
+            formControlName="option"
+            [value]="item"
+            class="radio radio-info radio-sm"
+          />
+          <label [for]="item.id" class="text-sm break-words">{{
+            item.text
+          }}</label>
         </div>
-        <button class="btn btn-primary btn-sm md:btn-md my-2 w-full">Vote</button>
-      </form>
+        }
+      </div>
+      <button class="btn btn-primary btn-sm md:btn-md my-2 w-full">Vote</button>
+    </form>
     }@else {
-      <form [formGroup]="pollForm">
-        <div class="flex flex-col gap-3 min-h-14">
-          @for (item of options; track item.id) {
-            <div class="flex gap-3 items-center">
-              <input
-                [id]="item.id"
-                type="radio"
-                formControlName="option"
-                [value]="item"
-                class="radio radio-info radio-sm"
-              />
-              <label [for]="item.id" class="text-sm break-words">{{ item.text }}</label>
-            </div>
-          }
+    <form [formGroup]="pollForm">
+      <div class="flex flex-col gap-3 min-h-14">
+        @for (item of options; track item.id) {
+        <div class="flex gap-3 items-center">
+          <input
+            [id]="item.id"
+            type="radio"
+            formControlName="option"
+            [value]="item"
+            class="radio radio-info radio-sm"
+          />
+          <label [for]="item.id" class="text-sm break-words">{{
+            item.text
+          }}</label>
         </div>
-        <button
-          (click)="cancelVoteEvent()"
-          class="btn btn-primary btn-sm md:btn-md my-2 w-full"
-        >
-          Cancel vote
-        </button>
-      </form>
+        }
+      </div>
+      <button
+        (click)="cancelVoteEvent()"
+        class="btn btn-primary btn-sm md:btn-md my-2 w-full"
+      >
+        Cancel vote
+      </button>
+    </form>
     }
 
-    <div class="flex justify-between gap-2 text-xs mt-4 pt-2 border-t border-gray-300 text-gray-500">
+    <div
+      class="flex justify-between gap-2 text-xs mt-4 pt-2 border-t border-gray-300 text-gray-500"
+    >
       <div>{{ createdTime | date : "dd/MM/yyyy" }}</div>
       <div class="text-right">
         by @if(author.length > 0){
-          <span class="truncate max-w-20">{{ author }}</span>
+        <span class="truncate max-w-20">{{ author }}</span>
         }@else{ anonymous }
       </div>
     </div>
