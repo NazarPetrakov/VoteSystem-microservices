@@ -10,7 +10,11 @@
       <div class="font-semibold text-lg line-clamp-2">{{ title }}</div>
 
       <div class="text-gray-500 font-mono text-sm line-clamp-4 mt-1">
-        {{ topic | topic }}
+        @if(topic){
+          {{ topic | topic }}
+        }@else{
+          Topic not specified
+        }
       </div>
     </div>
 

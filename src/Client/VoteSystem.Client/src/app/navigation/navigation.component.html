@@ -1,10 +1,19 @@
 <nav class="md:text-2xl">
   <div class="flex items-center justify-between mr-4">
-    <a
-      class="m-4 text-blue-700 p-3 font-semibold hover:bg-blue-700 hover:text-white hover:cursor-pointer rounded-t-4xl"
-      routerLink=""
-      >VotesLib</a
-    >
+    <div class="flex items-center">
+      <a
+        class="m-4 text-blue-700 p-3 font-semibold hover:bg-blue-700 hover:text-white hover:cursor-pointer rounded-t-4xl"
+        routerLink=""
+        >VotesLib</a
+      >
+      <div>
+        <button class="btn btn-ghost font-medium text-lg" matButton>
+          My polls
+        </button>
+      </div>
+    </div>
+    
+
     @if (!authService.currentUser()) {
     <div class="m-4 flex gap-x-10">
       <a class="link link-hover" routerLink="sign-in">Sign in</a>
@@ -13,7 +22,11 @@
     } @else {
     <div class="m-4 flex gap-x-10">
       <div>
-        <button class="btn btn-ghost font-medium text-lg" matButton (click)="openDialog()">
+        <button
+          class="btn btn-ghost font-medium text-lg"
+          matButton
+          (click)="openDialog()"
+        >
           + Create Poll
         </button>
       </div>

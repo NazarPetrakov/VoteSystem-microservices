@@ -21,6 +21,7 @@ import {
 import { NgxSpinnerComponent } from 'ngx-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { TopicPipe } from '../../_pipes/topic.pipe';
+import { AuthService } from '../../_services/auth.service';
 
 @Component({
   selector: 'app-poll',
@@ -47,7 +48,7 @@ export class PollComponent implements OnChanges {
   @Output() drop = new EventEmitter();
   @Output() vote = new EventEmitter<PollOption>();
   @Output() cancel = new EventEmitter<PollOption>();
-
+  
   fb = inject(FormBuilder);
 
   pollForm = this.fb.group({

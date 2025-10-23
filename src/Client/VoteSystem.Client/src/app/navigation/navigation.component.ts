@@ -7,6 +7,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { CreatePollDialogComponent } from '../polls/create-poll-dialog/create-poll-dialog.component';
 import { PollService } from '../_services/poll.service';
 import { CreatePollRequest } from '../_models/poll';
+import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-navigation',
   imports: [RouterLink, MatIconModule, MatButtonModule, MatDialogModule],
@@ -18,6 +19,7 @@ export class NavigationComponent {
   readonly dialog = inject(MatDialog);
   authService = inject(AuthService);
   router = inject(Router);
+  toastr = inject(ToastrService);
 
   openDialog() {
     const dialogRef = this.dialog.open(CreatePollDialogComponent);
@@ -36,7 +38,7 @@ export class NavigationComponent {
       );
 
       this.pollService.createPoll(createPoll).subscribe({
-        next: () => console.log('Poll created successfully'),
+        next: () => this.toastr.success('Hello world!', 'Toastr fun!'),
         error: (err) => console.error('Failed to create poll', err),
       });
     });

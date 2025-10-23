@@ -17,6 +17,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { Vote } from '../../_models/vote';
 import { PollOption } from '../../_models/poll';
 import { CreateVoteRequest } from '../../_models/_contracts/vote/createVoteRequest';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-poll-container',
@@ -32,6 +33,7 @@ export class PollContainerComponent implements OnInit {
 
   private spinner = inject(NgxSpinnerService);
   private userId = computed(() => this.authService.currentUser()?.userId);
+  private toastr = inject(ToastrService);
 
   isPollsLoaded = signal(false);
   isVotesLoaded = signal(false);
@@ -73,9 +75,10 @@ export class PollContainerComponent implements OnInit {
       this.voteService
         .loadUserVotes(this.userId()!)
         .subscribe(() => this.isVotesLoaded.set(true));
+    } else {
+      this.isVotesLoaded.set(true);
     }
   }
-
   loadUserVotes() {
     const userId = this.authService.currentUser()?.userId;
 
@@ -88,7 +91,10 @@ export class PollContainerComponent implements OnInit {
   }
   vote(option: PollOption) {
     const userId = this.userId();
-    if (!userId) return;
+    if (!userId) {
+      this.toastr.error("Sign in to vote")
+      return
+    };
 
     const votedOptionId = this.getVotedOptionId(option.pollId);
 

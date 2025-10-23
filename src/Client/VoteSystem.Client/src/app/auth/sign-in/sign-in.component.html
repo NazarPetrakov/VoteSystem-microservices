@@ -1,6 +1,6 @@
-<div class="flex bg-neutral justify-center min-h-84 items-center">
+<div class="flex justify-center min-h-84 items-center">
   <form
-    class="flex flex-col gap-4 text-white"
+    class="flex flex-col gap-4 border border-gray-300 rounded-2xl shadow-md bg-white p-9 w-96"
     [formGroup]="loginForm"
     (submit)="login()"
   >
@@ -12,7 +12,8 @@
       [maxLength]="256"
       [control]="userNameControl"
       placeholder="Username"
-      inputClass="bg-gray-300 text-black p-1 rounded-md"
+      inputClass="input"
+      labelClass="fieldset-legend"
     ></app-form-input>
     <app-form-input
       label="Password"
@@ -20,12 +21,12 @@
       [minLength]="6"
       [maxLength]="64"
       [control]="passwordControl"
-      inputClass="bg-gray-300 text-black p-1 rounded-md"
+      inputClass="input"
       placeholder="Password"
     ></app-form-input>
     <button
       [disabled]="!loginForm.valid"
-      class="btn btn-primary disabled:cursor-not-allowed disabled:text-white disabled:border-blue-500/30"
+      class="btn btn-primary disabled:btn-ghost"
     >
       Login
     </button>

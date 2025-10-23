@@ -13,4 +13,5 @@ export const routes: Routes = [
     component: SignUpComponent,
   },
   { path: '', component: PollContainerComponent },
+  { path: '**', component: PollContainerComponent },
 ];
