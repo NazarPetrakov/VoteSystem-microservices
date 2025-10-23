@@ -1,5 +1,7 @@
 using System.Linq.Expressions;
 using Common.Entities;
+using Common.Pagination;
+using Common.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Common.Repositories;
@@ -17,16 +19,18 @@ public class MongoRepository<T, TContext, TId> : IRepository<T, TId>
         _context = context;
         _dbSet = context.Set<T>();
     }
-    public async Task<ICollection<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null)
+    public async Task<PagedList<T>> GetAllPagedAsync(IQueryable<T> query,
+        PaginationParams paginationParams)
+    {
+        var pagedList = await query.ToPagedListAsync(paginationParams.PageSize, paginationParams.PageNumber);
+
+        return pagedList;
+    }
+    public IQueryable<T> GetAllQuery()
     {
         var query = _dbSet.AsQueryable();
 
-        if (filter != null)
-        {
-            query = query.Where(filter);
-        }
-
-        return await query.ToListAsync();
+        return query;
     }
     public async Task<T?> GetAsync(TId id, params Expression<Func<T, object>>[] includes)
     {
