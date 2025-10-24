@@ -1,3 +1,4 @@
+using Common.Pagination;
 using Common.Result;
 using PollService.API.Helpers;
 
@@ -5,6 +6,7 @@ namespace PollService.API.Interfaces;
 
 public interface IPollOptionOrchestrator
 {
+    Task<Result<PagedList<PollOptionResponse>>> GetAllPagedAsync(PaginationParams paginationParams);
     Task<Result<List<PollOptionResponse>>> GetAllAsync();
     Task<Result<PollOptionResponse>> GetAsync(Guid id);
     Task<Result<PollOptionResponse>> CreateAsync(CreatePollOptionRequest createPollOptionRequest, CancellationToken cancellationToken);
