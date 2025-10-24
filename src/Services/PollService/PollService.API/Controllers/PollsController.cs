@@ -1,4 +1,6 @@
 using Common.Contracts.User;
+using Common.Extensions;
+using Common.Pagination;
 using Common.Result;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,11 +14,17 @@ namespace PollService.API.Controllers
     public class PollsController(IPollOrchestrator pollOrchestrator) : ControllerBase
     {
         [HttpGet]
-        public async Task<ActionResult<List<PollResponse>>> GetAll()
+        public async Task<ActionResult<PagedList<PollResponse>>> GetAllPaged(
+            [FromQuery] PaginationParams paginationParams)
         {
-            var result = await pollOrchestrator.GetAllAsync();
+            var result = await pollOrchestrator.GetAllPagedAsync(paginationParams);
 
-            return result.Match<List<PollResponse>, ActionResult>(
+            if (result.IsSuccess && result.Data is not null)
+            {
+                Response.AddPaginationHeader(result.Data);
+            }
+
+            return result.Match<PagedList<PollResponse>, ActionResult>(
                 onSuccess: Ok,
                 onFailure: NotFound
             );

@@ -1,4 +1,6 @@
 using Common.Errors;
+using Common.Extensions;
+using Common.Pagination;
 using Common.Repositories;
 using Common.Result;
 using PollService.API.Extensions;
@@ -13,6 +15,17 @@ public class PollOrchestrator(IRepository<Poll, Guid> pollRepository,
     IRepository<UserCache, int> userRepository,
     IPollPublisher pollPublisher) : IPollOrchestrator
 {
+    public async Task<Result<PagedList<PollResponse>>> GetAllPagedAsync(PaginationParams paginationParams)
+    {
+        var polls = await pollRepository.GetAllPagedAsync(paginationParams);
+
+        var pollResponses = polls.Select(p => p.ToDto());
+
+        var pagedPollResponses = new PagedList<PollResponse>(pollResponses, polls.TotalCount,
+            paginationParams.PageNumber, paginationParams.PageSize);
+
+        return Result.Success(pagedPollResponses);
+    }
     public async Task<Result<List<PollResponse>>> GetAllAsync()
     {
         var polls = await pollRepository.GetAllAsync();
