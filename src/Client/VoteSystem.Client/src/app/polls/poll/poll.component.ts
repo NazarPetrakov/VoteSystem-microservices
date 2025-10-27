@@ -72,12 +72,12 @@ export class PollComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['options'] || changes['votedOptionId']) {
-      console.log('PollComponent: options or votedOptionId input changed');
+      // console.log('PollComponent: options or votedOptionId input changed');
       this.setVotedOption();
     }
   }
   private setVotedOption() {
-    console.log('voted option id', this.votedOptionId);
+    // console.log('voted option id', this.votedOptionId);
     if (this.votedOptionId) {
       this.isVoted.set(true);
       if (this.options.length > 0) {

@@ -38,7 +38,8 @@ export class NavigationComponent {
       );
 
       this.pollService.createPoll(createPoll).subscribe({
-        next: () => this.toastr.success('Hello world!', 'Toastr fun!'),
+        next: () =>
+          this.toastr.success('Poll successfully created', 'Success!'),
         error: (err) => console.error('Failed to create poll', err),
       });
     });

@@ -17,3 +17,13 @@
   <div class="p-8">No polls yet!</div>
   } }
 </div>
+<hr />
+<mat-paginator
+  [length]="pagination()?.totalItems ?? 0"
+  [pageSize]="pagination()?.itemsPerPage ?? 3"
+  [pageIndex]="(pagination()?.currentPage ?? 1) - 1"
+  (page)="handlePageEvent($event)"
+  [pageSizeOptions]="[5, 10, 15, 20]"
+  aria-label="Select page"
+>
+</mat-paginator>

@@ -4,6 +4,9 @@ import { environment } from '../../environments/environment.development';
 import { CreatePollRequest, Poll } from '../_models/poll';
 import { delay, of, tap } from 'rxjs';
 import { SKIP_LOADING } from '../_interceptors/loading-context';
+import { Pagination } from '../_models/pagination';
+import { PaginationQueryParams } from '../_models/_contracts/queryParams/paginationQueryParams';
+import { setPaginationHeaders } from '../_helpers/paginationHelper';
 
 @Injectable({
   providedIn: 'root',
@@ -13,26 +16,49 @@ export class PollService {
   private baseUrl = environment.pollBaseUrl;
 
   readonly polls = signal<Poll[]>([]);
+  readonly pagination = signal<Pagination | undefined>(undefined);
+
+  readonly createRefreshTrigger = signal(0);
+
+  triggerRefresh() {
+    this.createRefreshTrigger.update((v) => v + 1);
+  }
 
   createPoll(createPollRequest: CreatePollRequest) {
     return this.client
       .post<Poll>(`${this.baseUrl}polls`, createPollRequest)
       .pipe(
-        tap((poll) => {
-          this.polls.update((polls) => {
-            return [...polls, poll];
-          });
+        tap(() => {
+          this.triggerRefresh();
         })
       );
   }
-  loadPolls() {
-    return this.client.get<Poll[]>(`${this.baseUrl}polls`).pipe(
-      tap((polls) => {
-        if (this.polls().length === 0) {
-          this.polls.set(polls);
-        }
+  loadPolls(params: PaginationQueryParams) {
+    let httpParams = setPaginationHeaders(params.pageNumber, params.pageSize);
+
+    return this.client
+      .get<Poll[]>(`${this.baseUrl}polls`, {
+        observe: 'response',
+        params: httpParams,
       })
-    );
+      .pipe(
+        tap((response) => {
+          // 1. Extract the Poll items from the body
+          const polls = response.body || [];
+
+          // 2. Extract the Pagination header
+          const paginationHeader = response.headers.get('Pagination');
+
+          if (paginationHeader) {
+            // The header value is usually a JSON string, so parse it
+            const pagination: Pagination = JSON.parse(paginationHeader);
+            this.pagination.set(pagination);
+          }
+
+          // 3. Update the polls signal
+          this.polls.set(polls);
+        })
+      );
   }
   loadOptions(id: string) {
     const currentPolls = this.polls();
@@ -51,7 +77,6 @@ export class PollService {
         delay(1000),
 
         tap((poll) => {
-          console.log('Loaded poll options for', poll.id);
           this.polls.update((polls) => {
             const index = polls.findIndex((p) => p.id === poll.id);
             if (index !== -1) {

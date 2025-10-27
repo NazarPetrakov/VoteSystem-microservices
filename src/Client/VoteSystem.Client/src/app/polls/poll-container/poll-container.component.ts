@@ -6,6 +6,7 @@ import {
   inject,
   OnInit,
   signal,
+  untracked,
 } from '@angular/core';
 import { PollComponent } from '../poll/poll.component';
 import { PollService } from '../../_services/poll.service';
@@ -18,10 +19,12 @@ import { Vote } from '../../_models/vote';
 import { PollOption } from '../../_models/poll';
 import { CreateVoteRequest } from '../../_models/_contracts/vote/createVoteRequest';
 import { ToastrService } from 'ngx-toastr';
+import { PaginationQueryParams } from '../../_models/_contracts/queryParams/paginationQueryParams';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-poll-container',
-  imports: [PollComponent, MatIconModule],
+  imports: [PollComponent, MatIconModule, MatPaginatorModule],
   templateUrl: './poll-container.component.html',
   styleUrl: './poll-container.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -40,6 +43,15 @@ export class PollContainerComponent implements OnInit {
 
   polls = computed(() => this.pollService.polls() ?? []);
   userVotesMap = computed(() => this.voteService.votes() ?? []);
+
+  queryParams = signal<PaginationQueryParams>({
+    pageNumber: 1,
+    pageSize: 10,
+  });
+  pagination = computed(() => this.pollService.pagination());
+  // get getPagination() {
+  //   return this.pollService.pagination();
+  // }
 
   pollVotesMap = computed(() => {
     const userId = this.userId();
@@ -64,12 +76,27 @@ export class PollContainerComponent implements OnInit {
 
   constructor() {
     effect(() => {
-      console.log('Votes changed:', this.userVotesMap());
+      console.log('asdf');
+      this.pollService.createRefreshTrigger();
+
+      this.queryParams.set({
+        pageNumber: 1,
+        pageSize: 10,
+      });
+      this.isPollsLoaded.set(false);
+      untracked(() => {
+        this.pollService
+          .loadPolls(this.queryParams())
+          .subscribe(() => this.isPollsLoaded.set(true));
+      });
     });
   }
 
   ngOnInit(): void {
-    this.pollService.loadPolls().subscribe(() => this.isPollsLoaded.set(true));
+    console.log('hello');
+    this.pollService
+      .loadPolls(this.queryParams())
+      .subscribe(() => this.isPollsLoaded.set(true));
 
     if (this.userId()) {
       this.voteService
@@ -78,6 +105,15 @@ export class PollContainerComponent implements OnInit {
     } else {
       this.isVotesLoaded.set(true);
     }
+  }
+  handlePageEvent(e: PageEvent) {
+    this.queryParams.set({ pageNumber: e.pageIndex + 1, pageSize: e.pageSize });
+    this.isPollsLoaded.set(false);
+
+    const query = this.queryParams();
+    this.pollService
+      .loadPolls(query)
+      .subscribe(() => this.isPollsLoaded.set(true));
   }
   loadUserVotes() {
     const userId = this.authService.currentUser()?.userId;
@@ -92,9 +128,9 @@ export class PollContainerComponent implements OnInit {
   vote(option: PollOption) {
     const userId = this.userId();
     if (!userId) {
-      this.toastr.error("Sign in to vote")
-      return
-    };
+      this.toastr.error('Sign in to vote');
+      return;
+    }
 
     const votedOptionId = this.getVotedOptionId(option.pollId);
 
