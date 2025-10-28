@@ -1,8 +1,8 @@
 using Common.Errors;
-using Common.Extensions;
 using Common.Pagination;
 using Common.Repositories;
 using Common.Result;
+using Microsoft.EntityFrameworkCore;
 using PollService.API.Extensions;
 using PollService.API.Helpers;
 using PollService.API.Interfaces;
@@ -15,20 +15,64 @@ public class PollOrchestrator(IRepository<Poll, Guid> pollRepository,
     IRepository<UserCache, int> userRepository,
     IPollPublisher pollPublisher) : IPollOrchestrator
 {
-    public async Task<Result<PagedList<PollResponse>>> GetAllPagedAsync(PaginationParams paginationParams)
+    public async Task<Result<PagedList<PollResponse>>> GetAllPagedAsync(PollQueryParams pollParams)
     {
-        var polls = await pollRepository.GetAllPagedAsync(paginationParams);
+        var pollQuery = pollRepository.GetAllQuery();
+
+        var now = DateTime.UtcNow;
+
+        if (!string.IsNullOrEmpty(pollParams.Topic))
+        {
+            pollQuery = pollQuery.Where(p => p.Topic == pollParams.Topic);
+        }
+
+        if (pollParams.IsClosed.HasValue)
+            pollQuery = pollQuery.Where(p => p.IsClosed == pollParams.IsClosed.Value);
+
+        if (pollParams.IsExpired.HasValue)
+        {
+            if (pollParams.IsExpired.Value)
+            {
+                pollQuery = pollQuery.Where(p =>
+                    p.CreatedAt.AddSeconds(p.DurationInSeconds) <= now);
+            }
+            else
+            {
+                pollQuery = pollQuery.Where(p =>
+                    p.CreatedAt.AddSeconds(p.DurationInSeconds) > now);
+            }
+        }
+
+        if (!string.IsNullOrEmpty(pollParams.SearchTerm))
+        {
+            var term = pollParams.SearchTerm.ToLower();
+            pollQuery = pollQuery.Where(p =>
+                p.Title.ToLower().Contains(term) ||
+                (p.Topic != null && p.Topic.ToLower().Contains(term))
+            );
+        }
+
+        pollQuery = pollParams.OrderBy?.ToLower() switch
+        {
+            "title" => pollQuery.OrderBy(p => p.Title),
+            "createdat" => pollQuery.OrderByDescending(p => p.CreatedAt),
+            _ => pollQuery.OrderByDescending(p => p.CreatedAt)
+        };
+
+        var polls = await pollRepository.GetAllPagedAsync(pollQuery, pollParams);
 
         var pollResponses = polls.Select(p => p.ToDto());
 
         var pagedPollResponses = new PagedList<PollResponse>(pollResponses, polls.TotalCount,
-            paginationParams.PageNumber, paginationParams.PageSize);
+            pollParams.PageNumber, pollParams.PageSize);
 
         return Result.Success(pagedPollResponses);
     }
     public async Task<Result<List<PollResponse>>> GetAllAsync()
     {
-        var polls = await pollRepository.GetAllAsync();
+        var pollsQuery = pollRepository.GetAllQuery();
+
+        var polls = await pollsQuery.ToArrayAsync();
 
         return Result.Success(polls.Select(p => p.ToDto()).ToList());
     }

@@ -13,17 +13,31 @@ public static class PollDtoExtensions
             poll.UserId,
             poll.User?.UserName ?? "",
             poll.IsClosed,
+            poll.Duration,
             poll.CreatedAt,
             poll.UpdatedAt,
+            poll.EndTime,
+            poll.IsExpired,
+            poll.IsActive,
             poll.PollOptions.Select(po => po.ToDto()).ToList());
     }
     public static Poll ToEntity(this CreatePollRequest pollCreate)
     {
+        var timeCount = pollCreate.TimeCount;
+        TimeSpan timeSpan = pollCreate.TimeUnit switch
+        {
+            "minute" => TimeSpan.FromMinutes(timeCount),
+            "hour" => TimeSpan.FromHours(timeCount),
+            "day" => TimeSpan.FromDays(timeCount),
+            "week" => TimeSpan.FromDays(timeCount * 7),
+            _ => throw new ArgumentException("Invalid TimeUnit")
+        };
         return new Poll()
         {
             Title = pollCreate.Title,
             Topic = pollCreate.Topic,
             UserId = pollCreate.UserId,
+            Duration = timeSpan,
             IsClosed = pollCreate.IsClosed,
         };
     }

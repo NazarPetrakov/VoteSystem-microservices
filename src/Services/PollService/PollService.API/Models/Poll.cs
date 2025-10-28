@@ -8,7 +8,18 @@ public class Poll : BaseEntity<Guid>
     public required string Title { get; set; }
     public string? Topic { get; set; }
     public bool IsClosed { get; set; }
-    public TimeSpan Duration { get; set; }
+    public long DurationInSeconds { get; set; }
+
+    public int UserId { get; set; }
+    public UserCache User { get; set; } = null!;
+    public ICollection<PollOption> PollOptions { get; set; } = [];
+
+    [NotMapped]
+    public TimeSpan Duration
+    {
+        get => TimeSpan.FromSeconds(DurationInSeconds);
+        set => DurationInSeconds = (long)value.TotalSeconds;
+    }
 
     [NotMapped]
     public DateTime EndTime => CreatedAt.UtcDateTime.Add(Duration);
@@ -18,8 +29,4 @@ public class Poll : BaseEntity<Guid>
 
     [NotMapped]
     public bool IsActive => !IsClosed && !IsExpired;
-
-    public int UserId { get; set; }
-    public UserCache User { get; set; } = null!;
-    public ICollection<PollOption> PollOptions { get; set; } = [];
 }

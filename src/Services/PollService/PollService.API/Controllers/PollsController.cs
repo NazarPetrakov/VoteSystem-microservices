@@ -15,9 +15,9 @@ namespace PollService.API.Controllers
     {
         [HttpGet]
         public async Task<ActionResult<PagedList<PollResponse>>> GetAllPaged(
-            [FromQuery] PaginationParams paginationParams)
+            [FromQuery] PollQueryParams pollParams)
         {
-            var result = await pollOrchestrator.GetAllPagedAsync(paginationParams);
+            var result = await pollOrchestrator.GetAllPagedAsync(pollParams);
 
             if (result.IsSuccess && result.Data is not null)
             {
