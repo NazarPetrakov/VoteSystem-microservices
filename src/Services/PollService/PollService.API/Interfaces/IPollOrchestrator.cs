@@ -6,7 +6,7 @@ namespace PollService.API.Interfaces;
 
 public interface IPollOrchestrator
 {
-    Task<Result<PagedList<PollResponse>>> GetAllPagedAsync(PaginationParams paginationParams);
+    Task<Result<PagedList<PollResponse>>> GetAllPagedAsync(PollQueryParams pollParams);
     Task<Result<List<PollResponse>>> GetAllAsync();
     Task<Result<PollResponse>> GetAsync(Guid id);
     Task<Result<PollResponse>> CreateAsync(CreatePollRequest createPollRequest, CancellationToken cancellationToken);

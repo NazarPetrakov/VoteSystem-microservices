@@ -1,8 +1,8 @@
 using Common.Errors;
-using Common.Extensions;
 using Common.Pagination;
 using Common.Repositories;
 using Common.Result;
+using Microsoft.EntityFrameworkCore;
 using PollService.API.Extensions;
 using PollService.API.Helpers;
 using PollService.API.Interfaces;
@@ -16,7 +16,9 @@ public class PollOptionOrchestrator(IRepository<PollOption, Guid> pollOptionRepo
 {
     public async Task<Result<PagedList<PollOptionResponse>>> GetAllPagedAsync(PaginationParams paginationParams)
     {
-        var pollOptions = await pollOptionRepository.GetAllPagedAsync(paginationParams);
+        var pollOptionsQuery = pollOptionRepository.GetAllQuery();
+
+        var pollOptions = await pollOptionRepository.GetAllPagedAsync(pollOptionsQuery, paginationParams);
 
         var pollOptionResponses = pollOptions.Select(p => p.ToDto());
 
@@ -27,7 +29,9 @@ public class PollOptionOrchestrator(IRepository<PollOption, Guid> pollOptionRepo
     }
     public async Task<Result<List<PollOptionResponse>>> GetAllAsync()
     {
-        var pollOptions = await pollOptionRepository.GetAllAsync();
+        var pollOptionsQuery = pollOptionRepository.GetAllQuery();
+
+        var pollOptions = await pollOptionsQuery.ToListAsync();
 
         return Result.Success(pollOptions.Select(p => p.ToDto()).ToList());
     }
