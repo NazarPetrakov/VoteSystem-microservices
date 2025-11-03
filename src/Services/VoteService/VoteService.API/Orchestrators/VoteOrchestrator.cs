@@ -3,6 +3,7 @@ using Common.Errors;
 using Common.Repositories;
 using Common.Result;
 using MassTransit.Initializers;
+using Microsoft.EntityFrameworkCore;
 using VoteService.API.Contracts.Dtos;
 using VoteService.API.Extensions;
 using VoteService.API.Interfaces;
@@ -15,9 +16,17 @@ public class VoteOrchestrator(IRepository<Vote, Guid> voteRepository,
     IRepository<UserCache, int> userRepository,
     IRepository<PollOptionCache, Guid> pollOptionRepository) : IVoteOrchestrator
 {
-    public async Task<Result<List<VoteResponse>>> GetAllAsync(Expression<Func<Vote, bool>>? filter = null)
+    public async Task<Result<List<VoteResponse>>> GetAllAsync(
+        Expression<Func<Vote, bool>>? filter = null)
     {
-        var votes = await voteRepository.GetAllAsync(filter);
+        var votesQuery = voteRepository.GetAllQuery();
+
+        if (filter is not null)
+        {
+            votesQuery = votesQuery.Where(filter);
+        }
+
+        var votes = await votesQuery.ToListAsync();
 
         return Result.Success(votes.Select(v => v.ToDto()).ToList());
     }
@@ -44,8 +53,7 @@ public class VoteOrchestrator(IRepository<Vote, Guid> voteRepository,
         if (pollOption == null)
             return Result.Failure<VoteResponse>(PollOptionErrors.NotFound(createVoteRequest.PollOptionId));
 
-        var pollOptions = await pollOptionRepository.GetAllAsync(po => po.PollId == poll.Id);
-        var pollOptionsIds = pollOptions.Select(po => po.Id).ToList();
+        var pollOptionsIds = await GetPollOptionIdsByPollAsync(poll.Id);
 
         if (!pollOptionsIds.Contains(pollOption.Id))
             return Result.Failure<VoteResponse>(PollErrors.MissingOption(poll.Id, pollOption.Id));
@@ -69,5 +77,11 @@ public class VoteOrchestrator(IRepository<Vote, Guid> voteRepository,
         await voteRepository.DeleteAndSaveAsync(vote);
 
         return Result.Success();
+    }
+    private async Task<List<Guid>> GetPollOptionIdsByPollAsync(Guid pollId)
+    {
+        var pollOptionsQuery = pollOptionRepository.GetAllQuery();
+        return await pollOptionsQuery.Where(po => po.PollId == pollId).Select(po => po.Id)
+            .ToListAsync();
     }
 }

@@ -1,6 +1,7 @@
 using Common.Contracts.Poll;
 using Common.Repositories;
 using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using VoteService.API.Exceptions;
 using VoteService.API.Models;
 
@@ -18,7 +19,10 @@ public class PollDeletedConsumer(ILogger<PollDeletedConsumer> logger,
             ?? throw new NotFoundException($"Poll with id - {pollDeleted.PollId} not found.");
 
         // deleting votes related to poll
-        var votes = await voteRepository.GetAllAsync(v => v.PollId == pollCache.Id);
+        var votes = await voteRepository.GetAllQuery()
+            .Where(v => v.PollId == pollCache.Id)
+            .ToListAsync();
+
         await voteRepository.DeleteRangeAndSaveAsync(votes.ToArray());
 
         await pollRepository.DeleteAndSaveAsync(pollCache);

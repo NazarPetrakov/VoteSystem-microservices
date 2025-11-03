@@ -1,4 +1,5 @@
 using Common.Extensions;
+using Common.Middlewares;
 using VoteService.API.Data;
 using VoteService.API.Extensions;
 
@@ -33,6 +34,8 @@ app.UseCors(c =>
 {
     c.AllowAnyHeader().AllowCredentials().AllowAnyMethod().WithOrigins("http://localhost:4200");
 });
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseAuthorization();
 
