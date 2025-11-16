@@ -1,3 +1,159 @@
+<div
+  class="flex flex-col justify-between items-center bg-white p-3 sm:flex-row"
+>
+  <!-- Center Search Bar -->
+  <div class="flex justify-center flex-1">
+    <div class="flex items-center gap-2 w-full max-w-xl">
+      <label for="" class="input input-bordered w-full rounded-xl text-sm">
+        <input
+          type="text"
+          placeholder="Search polls..."
+          [(ngModel)]="searchTerm"
+          (keyup.enter)="onSearch()"
+        />
+        <button class="btn btn-link btn-sm" (click)="resetSearch()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </label>
+
+      <button class="btn btn-primary" (click)="onSearch()">Search</button>
+    </div>
+  </div>
+
+  <div class="ml-3 mt-4 sm:mt-0">
+    <label for="my-drawer-1" class="btn btn-outline btn-primary drawer-button">
+      <mat-icon>tune</mat-icon> Filters
+    </label>
+  </div>
+</div>
+
+<!-- Drawer -->
+<div class="drawer">
+  <input
+    id="my-drawer-1"
+    type="checkbox"
+    class="drawer-toggle"
+    [value]=""
+    (change)="toggleDrawer()"
+  />
+  <div class="drawer-content"></div>
+  <div class="drawer-side">
+    <label for="my-drawer-1" class="drawer-overlay"></label>
+
+    <form
+      class="bg-base-200 min-h-full w-80 p-6 flex flex-col justify-between"
+      [formGroup]="filtersForm"
+      (ngSubmit)="submitFilterForm()"
+    >
+      <!-- Header -->
+      <div>
+        <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+          <mat-icon>filter_alt</mat-icon> Filter & Sort
+        </h2>
+
+        <!-- Filtering -->
+        <div class="mb-6">
+          <h3 class="text-sm font-medium text-gray-500 uppercase mb-2">
+            Filters
+          </h3>
+          <div class="space-y-2">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                class="checkbox checkbox-primary checkbox-sm"
+                formControlName="active"
+              />
+              <span class="text-sm">Show active polls</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                class="checkbox checkbox-primary checkbox-sm"
+                formControlName="ended"
+              />
+              <span class="text-sm">Show ended polls</span>
+            </label>
+            <div>
+              <legend class="fieldset-legend">Topic</legend>
+              <mat-form-field>
+                <mat-label>Topic</mat-label>
+                <mat-select [formControl]="topicControl">
+                  <mat-option>-- None --</mat-option>
+                  @for (group of topicGroups; track group) {
+                  <mat-optgroup [label]="group.name">
+                    @for (topic of group.topics; track topic) {
+                    <mat-option [value]="topic.value">{{
+                      topic.viewValue
+                    }}</mat-option>
+                    }
+                  </mat-optgroup>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sorting -->
+        <div class="mb-6">
+          <h3 class="text-sm font-medium text-gray-500 uppercase mb-2">
+            Sorting
+          </h3>
+          <div class="space-y-2">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="sort"
+                class="radio radio-info radio-sm"
+                formControlName="sort"
+                value="createdAtDesc"
+              />
+              <span class="text-sm">Newest first</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="sort"
+                class="radio radio-info radio-sm"
+                formControlName="sort"
+                value="createdAt"
+              />
+              <span class="text-sm">Oldest first</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="sort"
+                class="radio radio-info radio-sm"
+                formControlName="sort"
+                value="title"
+              />
+              <span class="text-sm">By title</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="sort"
+                class="radio radio-info radio-sm"
+                formControlName="sort"
+                value="mostVoted"
+              />
+              <span class="text-sm">Most votes</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div>
+        <button type="submit" class="btn btn-primary w-full mt-6">
+          <mat-icon>done</mat-icon> Apply & Close
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <div class="p-6 flex flex-wrap min-w-16 min-h-124 gap-2">
   @if(isPollsLoaded() && isVotesLoaded()){ @for (item of polls(); track item.id)
   { @if (!item.isClosed) {
@@ -7,6 +163,9 @@
     [topic]="item.topic"
     [author]="item.userName"
     [createdTime]="item.createdTime"
+    [endTime]="item.endTime"
+    [isActive]="item.isActive"
+    [isExpired]="item.isExpired"
     [options]="item.pollOptions"
     [votedOptionId]="getVotedOptionId(item.id)"
     (drop)="loadOptions(item.id)"
@@ -17,13 +176,14 @@
   <div class="p-8">No polls yet!</div>
   } }
 </div>
-<hr />
-<mat-paginator
-  [length]="pagination()?.totalItems ?? 0"
-  [pageSize]="pagination()?.itemsPerPage ?? 3"
-  [pageIndex]="(pagination()?.currentPage ?? 1) - 1"
-  (page)="handlePageEvent($event)"
-  [pageSizeOptions]="[5, 10, 15, 20]"
-  aria-label="Select page"
->
-</mat-paginator>
+<footer class="fixed bottom-0 w-full border-t-1 border-t-gray-400">
+  <mat-paginator
+    [length]="pagination()?.totalItems ?? 0"
+    [pageSize]="pagination()?.itemsPerPage ?? 3"
+    [pageIndex]="(pagination()?.currentPage ?? 1) - 1"
+    (page)="handlePageEvent($event)"
+    [pageSizeOptions]="[5, 10, 15, 20]"
+    aria-label="Select page"
+  >
+  </mat-paginator>
+</footer>

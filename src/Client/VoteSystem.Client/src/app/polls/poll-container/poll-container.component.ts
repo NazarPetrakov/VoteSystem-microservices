@@ -19,12 +19,29 @@ import { Vote } from '../../_models/vote';
 import { PollOption } from '../../_models/poll';
 import { CreateVoteRequest } from '../../_models/_contracts/vote/createVoteRequest';
 import { ToastrService } from 'ngx-toastr';
-import { PaginationQueryParams } from '../../_models/_contracts/queryParams/paginationQueryParams';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import {
+  FormBuilder,
+  FormControl,
+  FormsModule,
+  ReactiveFormsModule,
+} from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { TopicGroups } from '../../_models/_contracts/topic/topic';
+import { PollQueryParams } from '../../_models/_contracts/queryParams/pollQueryParams';
 
 @Component({
   selector: 'app-poll-container',
-  imports: [PollComponent, MatIconModule, MatPaginatorModule],
+  imports: [
+    PollComponent,
+    MatIconModule,
+    MatPaginatorModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatSelectModule,
+  ],
   templateUrl: './poll-container.component.html',
   styleUrl: './poll-container.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -37,6 +54,20 @@ export class PollContainerComponent implements OnInit {
   private spinner = inject(NgxSpinnerService);
   private userId = computed(() => this.authService.currentUser()?.userId);
   private toastr = inject(ToastrService);
+  private fb = inject(FormBuilder);
+
+  filtersForm = this.fb.group({
+    active: this.fb.control(true),
+    ended: this.fb.control(true),
+    topic: this.fb.control(''),
+    sort: this.fb.control('title'),
+  });
+
+  topicGroups = TopicGroups;
+
+  get topicControl() {
+    return this.filtersForm.get('topic') as FormControl;
+  }
 
   isPollsLoaded = signal(false);
   isVotesLoaded = signal(false);
@@ -44,14 +75,20 @@ export class PollContainerComponent implements OnInit {
   polls = computed(() => this.pollService.polls() ?? []);
   userVotesMap = computed(() => this.voteService.votes() ?? []);
 
-  queryParams = signal<PaginationQueryParams>({
+  queryParams = signal<PollQueryParams>({
     pageNumber: 1,
     pageSize: 10,
+    orderBy: 'title',
+    isClosed: false,
+    isExpired: undefined,
+    topic: undefined,
   });
+
+  isDrawerOpen = signal(false);
+
+  searchTerm: string = '';
+
   pagination = computed(() => this.pollService.pagination());
-  // get getPagination() {
-  //   return this.pollService.pagination();
-  // }
 
   pollVotesMap = computed(() => {
     const userId = this.userId();
@@ -76,13 +113,10 @@ export class PollContainerComponent implements OnInit {
 
   constructor() {
     effect(() => {
-      console.log('asdf');
       this.pollService.createRefreshTrigger();
 
-      this.queryParams.set({
-        pageNumber: 1,
-        pageSize: 10,
-      });
+      this.resetParams();
+
       this.isPollsLoaded.set(false);
       untracked(() => {
         this.pollService
@@ -93,7 +127,6 @@ export class PollContainerComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log('hello');
     this.pollService
       .loadPolls(this.queryParams())
       .subscribe(() => this.isPollsLoaded.set(true));
@@ -106,8 +139,80 @@ export class PollContainerComponent implements OnInit {
       this.isVotesLoaded.set(true);
     }
   }
+  toggleDrawer() {
+    this.isDrawerOpen.set(!this.isDrawerOpen());
+  }
+  onSearch() {
+    console.log(this.searchTerm);
+
+    if (this.queryParams().searchTerm !== this.searchTerm) {
+      this.queryParams.update((params) => {
+        return { ...params, searchTerm: this.searchTerm };
+      });
+      this.isPollsLoaded.set(false);
+
+      const query = this.queryParams();
+
+      this.pollService
+        .loadPolls(query)
+        .subscribe(() => this.isPollsLoaded.set(true));
+    }
+  }
+  resetSearch() {
+    if (this.searchTerm !== '') {
+      this.searchTerm = '';
+      this.onSearch();
+    }
+  }
+  submitFilterForm() {
+    const drawerCheckbox = document.getElementById(
+      'my-drawer-1'
+    ) as HTMLInputElement;
+    if (drawerCheckbox) drawerCheckbox.checked = false;
+
+    if (this.filtersForm.valid) {
+      const formValue = this.filtersForm.value;
+      console.log('Form values:', formValue);
+      let isExpired: boolean | undefined;
+
+      if (formValue.active && !formValue.ended) {
+        isExpired = false;
+      } else if (!formValue.active && formValue.ended) {
+        isExpired = true;
+      } else {
+        isExpired = undefined;
+      }
+
+      this.queryParams.update((params) => {
+        return {
+          pageNumber: 1,
+          pageSize: params.pageSize,
+          orderBy: formValue.sort ?? undefined,
+          isClosed: params.isClosed,
+          isExpired: isExpired,
+          topic: formValue.topic ?? undefined,
+        };
+      });
+
+      this.isPollsLoaded.set(false);
+
+      const query = this.queryParams();
+      this.pollService
+        .loadPolls(query)
+        .subscribe(() => this.isPollsLoaded.set(true));
+    }
+  }
   handlePageEvent(e: PageEvent) {
-    this.queryParams.set({ pageNumber: e.pageIndex + 1, pageSize: e.pageSize });
+    this.queryParams.update((params) => {
+      return {
+        pageNumber: e.pageIndex + 1,
+        pageSize: e.pageSize,
+        orderBy: params.orderBy,
+        isClosed: params.isClosed,
+        isExpired: params.isExpired,
+        topic: params.topic,
+      };
+    });
     this.isPollsLoaded.set(false);
 
     const query = this.queryParams();
@@ -177,6 +282,15 @@ export class PollContainerComponent implements OnInit {
     this.voteService
       .deleteVote(vote.voteId, userId)
       .subscribe(() => console.log('successfully deleted'));
+  }
+  private resetParams() {
+    this.queryParams.set({
+      pageNumber: 1,
+      pageSize: 10,
+      orderBy: 'title',
+      isClosed: false,
+      isExpired: undefined,
+    });
   }
   private getVote(
     userId: number,

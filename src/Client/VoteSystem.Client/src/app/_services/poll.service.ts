@@ -1,4 +1,4 @@
-import { HttpClient, HttpContext } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../environments/environment.development';
 import { CreatePollRequest, Poll } from '../_models/poll';
@@ -7,6 +7,7 @@ import { SKIP_LOADING } from '../_interceptors/loading-context';
 import { Pagination } from '../_models/pagination';
 import { PaginationQueryParams } from '../_models/_contracts/queryParams/paginationQueryParams';
 import { setPaginationHeaders } from '../_helpers/paginationHelper';
+import { PollQueryParams } from '../_models/_contracts/queryParams/pollQueryParams';
 
 @Injectable({
   providedIn: 'root',
@@ -33,8 +34,29 @@ export class PollService {
         })
       );
   }
-  loadPolls(params: PaginationQueryParams) {
-    let httpParams = setPaginationHeaders(params.pageNumber, params.pageSize);
+  loadPolls(pollParams: PollQueryParams) {
+    let httpParams = setPaginationHeaders(
+      pollParams.pageNumber,
+      pollParams.pageSize
+    );
+
+    console.log('a', pollParams);
+
+    if (pollParams.searchTerm !== undefined) {
+      httpParams = httpParams.append('searchTerm', pollParams.searchTerm);
+    }
+    if (pollParams.topic !== undefined) {
+      httpParams = httpParams.append('topic', pollParams.topic);
+    }
+    if (pollParams.isExpired !== undefined) {
+      httpParams = httpParams.append('isExpired', pollParams.isExpired);
+    }
+    if (pollParams.isClosed !== undefined) {
+      httpParams = httpParams.append('isClosed', pollParams.isClosed);
+    }
+    if (pollParams.orderBy !== undefined) {
+      httpParams = httpParams.append('orderBy', pollParams.orderBy);
+    }
 
     return this.client
       .get<Poll[]>(`${this.baseUrl}polls`, {
