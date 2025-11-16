@@ -22,7 +22,7 @@ import { MatIconModule } from '@angular/material/icon';
     FormInputComponent,
     MatFormFieldModule,
     MatSelectModule,
-    MatIconModule
+    MatIconModule,
   ],
   templateUrl: './create-poll-dialog.component.html',
   styleUrl: './create-poll-dialog.component.css',
@@ -35,6 +35,11 @@ export class CreatePollDialogComponent {
   createPollForm = this.fb.group({
     title: ['', Validators.required],
     topic: [''],
+    timeCount: [
+      1,
+      [Validators.required, Validators.min(1), Validators.max(1000)],
+    ],
+    timeUnit: ['', Validators.required],
     options: this.fb.array(
       [
         this.fb.control('', Validators.required),
@@ -48,6 +53,12 @@ export class CreatePollDialogComponent {
   }
   get topicControl() {
     return this.createPollForm.get('topic') as FormControl;
+  }
+  get timeCountControl() {
+    return this.createPollForm.get('timeCount') as FormControl;
+  }
+  get timeUnitControl() {
+    return this.createPollForm.get('timeUnit') as FormControl;
   }
   get formOptions() {
     return this.createPollForm.get('options') as FormArray;

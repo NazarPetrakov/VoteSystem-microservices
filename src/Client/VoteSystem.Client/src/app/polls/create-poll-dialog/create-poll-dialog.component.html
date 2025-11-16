@@ -13,6 +13,39 @@
     ></app-form-input>
 
     <div>
+      <label class="fieldset-legend">Poll duration</label>
+      <input
+        type="number"
+        class="input w-12"
+        placeholder="1"
+        title="Must be between 1 and 1000"
+        formControlName="timeCount"
+      />
+      <select class="select mt-1" formControlName="timeUnit">
+        <option value="" disabled selected>Pick a time unit</option>
+        <option value="minute">Minute</option>
+        <option value="hour">Hour</option>
+        <option value="day">Day</option>
+        <option value="week">Week</option>
+      </select>
+      @if(timeUnitControl.invalid && (timeUnitControl.touched ||
+      timeUnitControl.dirty)){ @if(timeUnitControl.hasError('required')){
+      <p class="text-error p-1 mt-3 border border-red-200">
+        Time unit is required
+      </p>
+      } } @if(timeCountControl.invalid && (timeCountControl.touched ||
+      timeCountControl.dirty)){ @if(timeCountControl.hasError('required')){
+      <p class="text-error p-1 mt-3 border border-red-200">
+        Time count is required
+      </p>
+      }@if(timeCountControl.hasError('min') || timeCountControl.hasError('max')){
+      <p class="text-error p-1 mt-3 border border-red-200">
+        Time count must be between 1 and 1000
+      </p>
+      } }
+    </div>
+
+    <div>
       <legend class="fieldset-legend">Topic</legend>
       <mat-form-field>
         <mat-label>Topic</mat-label>
@@ -21,9 +54,7 @@
           @for (group of topicGroups; track group) {
           <mat-optgroup [label]="group.name">
             @for (topic of group.topics; track topic) {
-            <mat-option [value]="topic.value">{{
-              topic.viewValue
-            }}</mat-option>
+            <mat-option [value]="topic.value">{{ topic.viewValue }}</mat-option>
             }
           </mat-optgroup>
           }
@@ -40,17 +71,15 @@
           [formControlName]="i"
           [placeholder]="'Option ' + (i + 1)"
         />
-        <button
-          class="btn btn-sm"
-          type="button"
-          (click)="removeOption(i)"
-        >
+        <button class="btn btn-sm" type="button" (click)="removeOption(i)">
           <mat-icon>delete</mat-icon>
         </button>
       </label>
       @if(option.invalid && (option.touched || option.dirty)){
       @if(option.hasError('required')){
-      <p class="text-error p-1 mt-3 border border-red-200">Option {{ i + 1 }} is required</p>
+      <p class="text-error p-1 mt-3 border border-red-200">
+        Option {{ i + 1 }} is required
+      </p>
       } }}
     </div>
 
@@ -60,7 +89,9 @@
 
     @if(formOptions.invalid && (formOptions.touched || formOptions.dirty)){
     @if(formOptions.hasError('minlength') || formOptions.hasError('required')){
-    <p class="text-error p-1 mt-3 border border-red-200">At least 2 options are required</p>
+    <p class="text-error p-1 mt-3 border border-red-200">
+      At least 2 options are required
+    </p>
     } }
   </form>
 </mat-dialog-content>

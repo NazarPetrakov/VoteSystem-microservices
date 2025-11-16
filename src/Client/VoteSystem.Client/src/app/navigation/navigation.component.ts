@@ -27,12 +27,16 @@ export class NavigationComponent {
     dialogRef.afterClosed().subscribe((result) => {
       const user = this.authService.currentUser();
 
+      console.log(result);
+
       if (!result || !user) return;
 
       const createPoll = new CreatePollRequest(
         result.title,
         user.userId,
         false,
+        result.timeCount,
+        result.timeUnit,
         result.options,
         result.topic
       );
