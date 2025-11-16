@@ -13,23 +13,32 @@ export const exceptionsInterceptor: HttpInterceptorFn = (req, next) => {
 
       switch (error.status) {
         case 400:
-          errorArray.map((e) => {
-            toastr.error(e.description, e.code);
-          });
+          console.log('400');
+          errorArray
+            ? errorArray.map((e) => {
+                toastr.error(e.description, e.code);
+              })
+            : toastr.error('Bad request');
           break;
         case 401:
-          errorArray.map((e) => {
-            toastr.error(e.description, e.code);
-          });
+          console.log('401');
+          errorArray
+            ? errorArray.map((e) => {
+                toastr.error(e.description, e.code);
+              })
+            : toastr.error('Unauthorized');
           break;
         case 404:
+          console.log('404');
           toastr.error('Not found');
           break;
         case 500:
+          console.log('500');
           toastr.error('Interval server error');
           break;
+        default:
+          toastr.error('Unexpected error occurs');
       }
-      toastr.error('Unexpected error occurs');
 
       return throwError(() => new Error(error.message));
     })
