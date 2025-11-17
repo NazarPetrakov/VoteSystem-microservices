@@ -34,7 +34,7 @@ public class MongoRepository<T, TContext, TId> : IRepository<T, TId>
     }
     public async Task<T?> GetAsync(TId id, params Expression<Func<T, object>>[] includes)
     {
-        return await _dbSet.AsNoTracking().FirstOrDefaultAsync(p => p.Id.Equals(id));
+        return await _dbSet.FirstOrDefaultAsync(p => p.Id.Equals(id));
     }
     public async Task<T> CreateAndSaveAsync(T entity)
     {
@@ -52,12 +52,16 @@ public class MongoRepository<T, TContext, TId> : IRepository<T, TId>
     }
     public async Task UpdateAndSaveAsync(T entity)
     {
-        _dbSet.Update(entity);
+        _context.Entry(entity).State = EntityState.Modified;
         await _context.SaveChangesAsync();
     }
     public async Task DeleteRangeAndSaveAsync(T[] entities)
     {
         _dbSet.RemoveRange(entities);
+        await _context.SaveChangesAsync();
+    }
+    public async Task SaveChangesAsync()
+    {
         await _context.SaveChangesAsync();
     }
 }
