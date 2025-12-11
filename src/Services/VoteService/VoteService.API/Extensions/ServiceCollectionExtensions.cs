@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using VoteService.API.Consumers;
 using VoteService.API.Interfaces;
 using VoteService.API.Orchestrators;
+using VoteService.API.Publishers;
 using VoteService.API.Repositories;
 
 namespace VoteService.API.Extensions;
@@ -47,6 +48,8 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped(typeof(IRepository<,>), typeof(MSSqlRepository<,>));
         services.AddScoped<IVoteOrchestrator, VoteOrchestrator>();
+
+        services.AddScoped<IVotePublisher, VotePublisher>();
 
         return services;
     }

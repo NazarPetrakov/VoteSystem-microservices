@@ -9,6 +9,6 @@ public interface IVoteOrchestrator
 {
     Task<Result<List<VoteResponse>>> GetAllAsync(Expression<Func<Vote, bool>>? filter = null);
     Task<Result<VoteResponse>> GetAsync(Guid voteId);
-    Task<Result<VoteResponse>> CreateAsync(CreateVoteRequest createVoteRequest);
-    Task<Result> DeleteAsync(Guid voteId);
+    Task<Result<VoteResponse>> CreateAsync(CreateVoteRequest createVoteRequest, CancellationToken cancellationToken);
+    Task<Result> DeleteAsync(Guid voteId, CancellationToken cancellationToken);
 }

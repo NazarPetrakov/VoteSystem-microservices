@@ -49,9 +49,9 @@ namespace VoteService.API.Controllers
         }
         [Authorize(Roles = Roles.Member)]
         [HttpPost]
-        public async Task<ActionResult<VoteResponse>> CreateVote(CreateVoteRequest createVoteRequest)
+        public async Task<ActionResult<VoteResponse>> CreateVote(CreateVoteRequest createVoteRequest, CancellationToken cancellationToken)
         {
-            var createResult = await voteOrchestrator.CreateAsync(createVoteRequest);
+            var createResult = await voteOrchestrator.CreateAsync(createVoteRequest, cancellationToken);
 
             return createResult.Match<VoteResponse, ActionResult>
             (
@@ -61,9 +61,9 @@ namespace VoteService.API.Controllers
         }
         [Authorize(Roles = Roles.Member)]
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteVote(Guid id)
+        public async Task<ActionResult> DeleteVote(Guid id, CancellationToken cancellationToken)
         {
-            var result = await voteOrchestrator.DeleteAsync(id);
+            var result = await voteOrchestrator.DeleteAsync(id, cancellationToken);
 
             return result.Match<ActionResult>
             (

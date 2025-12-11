@@ -14,7 +14,8 @@ namespace VoteService.API.Orchestrators;
 public class VoteOrchestrator(IRepository<Vote, Guid> voteRepository,
     IRepository<PollCache, Guid> pollRepository,
     IRepository<UserCache, int> userRepository,
-    IRepository<PollOptionCache, Guid> pollOptionRepository) : IVoteOrchestrator
+    IRepository<PollOptionCache, Guid> pollOptionRepository,
+    IVotePublisher votePublisher) : IVoteOrchestrator
 {
     public async Task<Result<List<VoteResponse>>> GetAllAsync(
         Expression<Func<Vote, bool>>? filter = null)
@@ -39,7 +40,8 @@ public class VoteOrchestrator(IRepository<Vote, Guid> voteRepository,
 
         return Result.Success(vote.ToDto());
     }
-    public async Task<Result<VoteResponse>> CreateAsync(CreateVoteRequest createVoteRequest)
+    public async Task<Result<VoteResponse>> CreateAsync(CreateVoteRequest createVoteRequest, 
+        CancellationToken cancellationToken)
     {
         var user = await userRepository.GetAsync(createVoteRequest.UserId);
         if (user == null)
@@ -65,9 +67,13 @@ public class VoteOrchestrator(IRepository<Vote, Guid> voteRepository,
 
         var createdVote = await voteRepository.CreateAndSaveAsync(vote);
 
-        return Result.Success(createdVote.ToDto());
+        var voteDto = createdVote.ToDto();
+
+        await votePublisher.NotifyVoteCreatedAsync(voteDto, cancellationToken);
+
+        return Result.Success(voteDto);
     }
-    public async Task<Result> DeleteAsync(Guid voteId)
+    public async Task<Result> DeleteAsync(Guid voteId, CancellationToken cancellationToken)
     {
         var vote = await voteRepository.GetAsync(voteId);
 
@@ -75,6 +81,10 @@ public class VoteOrchestrator(IRepository<Vote, Guid> voteRepository,
             return Result.Failure(VoteErrors.NotFound(voteId));
 
         await voteRepository.DeleteAndSaveAsync(vote);
+
+        var voteDto = vote.ToDto();
+
+        await votePublisher.NotifyVoteDeletedAsync(voteDto, cancellationToken);
 
         return Result.Success();
     }
