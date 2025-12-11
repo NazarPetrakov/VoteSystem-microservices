@@ -31,6 +31,8 @@ builder.Services.AddMassTransit(configure =>
             });
             configure.AddConsumer<PollCreatedConsumer>();
             configure.AddConsumer<PollDeletedConsumer>();
+            configure.AddConsumer<VoteCreatedConsumer>();
+            configure.AddConsumer<VoteDeletedConsumer>();
             configure.UsingRabbitMq((context, cfg) =>
             {
                 var rabbitMqOptions = context.GetRequiredService<IOptions<RabbitMqOptions>>().Value;
