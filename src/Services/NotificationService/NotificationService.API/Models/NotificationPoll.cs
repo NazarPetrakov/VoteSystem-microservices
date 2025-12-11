@@ -1,9 +1,10 @@
+using Common.Entities;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace NotificationService.API.Models;
 
-public class NotificationPoll
+public class NotificationPoll : IEntity<Guid>
 {
     [BsonId]
     [BsonRepresentation(BsonType.String)]

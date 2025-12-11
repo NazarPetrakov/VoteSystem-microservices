@@ -1,22 +1,51 @@
+using Common.Extensions;
+using Common.Options;
+using Common.Repositories;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using NotificationService.API.Consumers;
 using NotificationService.API.Data;
 using NotificationService.API.Models;
-using NotificationService.API.Settigns;
+using NotificationService.API.Repositories;
+using NotificationService.API.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// TODO: DTO for poll 
-// TODO: DTO for pollOption 
-// TODO: Add massTransit, consumers for poll and pollOptions
-// TODO: event contracts for voteCreated voteDeleted maybe
-
-
 var mongoSettings = builder.Configuration.GetSection(MongoDbSettings.SectionName).Get<MongoDbSettings>();
+
+builder.Services.AddCommonOptions(builder.Configuration);
 
 builder.Services.AddDbContext<AppDbContext>(cfg =>
 {
     cfg.UseMongoDB(mongoSettings?.ConnectionString ?? "", mongoSettings?.DatabaseName ?? "");
 });
+
+builder.Services.AddMassTransit(configure =>
+        {
+            configure.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("notifyservice", false));
+
+            configure.AddConsumer<PollOptionCreatedConsumer>(c =>
+            {
+                c.UseMessageRetry(r => r.Interval(5, TimeSpan.FromSeconds(5)));
+            });
+            configure.AddConsumer<PollCreatedConsumer>();
+            configure.AddConsumer<PollDeletedConsumer>();
+            configure.UsingRabbitMq((context, cfg) =>
+            {
+                var rabbitMqOptions = context.GetRequiredService<IOptions<RabbitMqOptions>>().Value;
+
+                cfg.Host(new Uri(rabbitMqOptions.Host), h =>
+                {
+                    h.Username(rabbitMqOptions.Username);
+                    h.Password(rabbitMqOptions.Password);
+                });
+
+                cfg.ConfigureEndpoints(context);
+            });
+        });
+
+builder.Services.AddScoped(typeof(IRepository<,>), typeof(MongoRepository<,>));
 
 var app = builder.Build();
 
@@ -26,21 +55,21 @@ app.MapPost("/notifications", async (AppDbContext appDbContext) =>
 {
     appDbContext.Polls.Add(new NotificationPoll
     {
-        Id = new Guid("00000000-0000-0000-0000-000000000002"),
-        Title = "First",
+        Id = new Guid("00000000-0000-0000-0000-000000000003"),
+        Title = "Hello from Notification Service",
         IsClosed = false,
-        TotalVotes = 0,
+        TotalVotes = 110,
         Options = new List<NotificationPollOption>
         {
             new NotificationPollOption
             {
                 Text = "First option",
-                VoteCount = 1
+                VoteCount = 10
             },
             new NotificationPollOption
             {
                 Text = "Second option",
-                VoteCount = 2
+                VoteCount = 100
             }
         }
     });
@@ -48,16 +77,7 @@ app.MapPost("/notifications", async (AppDbContext appDbContext) =>
 
     return Results.Ok();
 });
-app.MapPost("/notifications/options", async (AppDbContext appDbContext) =>
-{
-    var poll = appDbContext.Polls.FirstOrDefault(p => p.Id == new Guid("00000000-0000-0000-0000-000000000002"));
 
-    poll.Options.Add(new NotificationPollOption { Id = new Guid("00000000-0000-0000-0000-000000000003"), Text = "Third option", VoteCount = 0 });
-
-    await appDbContext.SaveChangesAsync();
-
-    return Results.Ok();
-});
 
 app.MapGet("/notifications", (AppDbContext appDbContext) =>
 {
