@@ -485,8 +485,6 @@ $RECYCLE.BIN/
 
 # *app
 src/Services/PollService/PollService.API/app
-src/Services/NotificationService/NotificationService.API/appsettings.Development.json
-src/Services/AuthService/AuthService.API/appsettings.json
-src/Services/PollService/PollService.API/appsettings.json
-src/Services/VoteService/VoteService.API/appsettings.json
 src/Client/VoteSystem.Client/.angular
+**/appsettings.Development.json
+**/appsettings.json
