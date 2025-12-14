@@ -4,6 +4,10 @@ using Common.Repositories;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
+using MongoDB.Driver;
 using NotificationService.API.Consumers;
 using NotificationService.API.Data;
 using NotificationService.API.Models;
@@ -16,10 +20,26 @@ var mongoSettings = builder.Configuration.GetSection(MongoDbSettings.SectionName
 
 builder.Services.AddCommonOptions(builder.Configuration);
 
+BsonSerializer.RegisterSerializer(
+    new GuidSerializer(GuidRepresentation.Standard)
+);
+
 builder.Services.AddDbContext<AppDbContext>(cfg =>
 {
     cfg.UseMongoDB(mongoSettings?.ConnectionString ?? "", mongoSettings?.DatabaseName ?? "");
 });
+
+builder.Services.AddSingleton<IMongoClient>(sp =>
+{
+    return new MongoClient(mongoSettings?.ConnectionString ?? "");
+});
+
+builder.Services.AddSingleton(sp =>
+{
+    var client = sp.GetRequiredService<IMongoClient>();
+    return client.GetDatabase(mongoSettings?.DatabaseName ?? "");
+});
+
 
 builder.Services.AddMassTransit(configure =>
         {
@@ -48,6 +68,7 @@ builder.Services.AddMassTransit(configure =>
         });
 
 builder.Services.AddScoped(typeof(IRepository<,>), typeof(MongoRepository<,>));
+builder.Services.AddScoped<IVoteCounterRepository, VoteCounterRepository>();
 
 var app = builder.Build();
 
