@@ -17,9 +17,9 @@ public class VoteCounterRepository : IVoteCounterRepository
     public async Task DecrementVoteCountAsync(Guid pollId, Guid optionId)
     {
         var filter = Builders<NotificationPoll>.Filter.And(
-        Builders<NotificationPoll>.Filter.Eq(p => p.Id, pollId),
-        Builders<NotificationPoll>.Filter.ElemMatch(
-            p => p.Options, o => o.OptionId == optionId && o.VoteCount > 0)
+            Builders<NotificationPoll>.Filter.Eq(p => p.Id, pollId),
+            Builders<NotificationPoll>.Filter.ElemMatch(
+                p => p.Options, o => o.OptionId == optionId && o.VoteCount > 0)
     );
 
         var update = Builders<NotificationPoll>.Update
