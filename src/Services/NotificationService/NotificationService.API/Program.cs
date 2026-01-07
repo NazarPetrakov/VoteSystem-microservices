@@ -44,41 +44,6 @@ app.MapGet("api/notifications/poll/{pollId}/votes", async (Guid pollId, IReposit
     return Results.Ok(result);
 });
 
-
-app.MapPost("api/notifications", async (IRepository<NotificationPoll, Guid> repository) =>
-{
-    await repository.CreateAndSaveAsync(new NotificationPoll()
-    {
-        Title = "New title",
-        IsClosed = false,
-        TotalVotes = 0,
-        Options = new List<NotificationPollOption>()
-        {
-            new NotificationPollOption
-            {
-             Text = "First",
-             VoteCount = 0
-            },
-            new NotificationPollOption
-            {
-             Text = "First",
-             VoteCount = 0
-            },
-            new NotificationPollOption
-            {
-             Text = "First",
-             VoteCount = 0
-            },
-            new NotificationPollOption
-            {
-             Text = "First",
-             VoteCount = 0
-            },
-        }
-    });
-    return Results.Ok();
-});
-
 app.UseHttpsRedirection();
 
 //Warmup MongoDb and EFCore connection

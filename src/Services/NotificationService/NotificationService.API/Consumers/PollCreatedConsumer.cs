@@ -12,10 +12,16 @@ public class PollCreatedConsumer(ILogger<PollCreatedConsumer> logger,
     {
         var pollCreated = context.Message;
 
+        var pollOptionsToCreate = pollCreated.OptionIds.Select(id => new NotificationPollOption()
+        {
+            OptionId = id
+        }).ToList();
+
         await pollRepository.CreateAndSaveAsync(new NotificationPoll
         {
             Id = pollCreated.PollId,
-            IsClosed = pollCreated.IsClosed
+            IsClosed = pollCreated.IsClosed,
+            Options = pollOptionsToCreate
         });
 
         logger.LogInformation($"{typeof(PollCreatedConsumer)}: poll id - {pollCreated.PollId}");
