@@ -19,15 +19,16 @@ public class PollPublisher(IPublishEndpoint publishEndpoint) : IPollPublisher
         CancellationToken cancellationToken)
     {
         var pollId = pollResponse.Id;
+        var pollOptionIds = pollResponse.pollOptions.Select(o => o.Id).ToList();
 
-        await publishEndpoint.Publish(new PollCreated(pollId, pollResponse.IsClosed),
+        await publishEndpoint.Publish(new PollCreated(pollId, pollResponse.IsClosed, pollOptionIds),
             cancellationToken);
 
-        foreach (var option in pollResponse.pollOptions)
-        {
-            await publishEndpoint.Publish(new PollOptionCreated(option.Id, pollId),
-                cancellationToken);
-        }
+        // foreach (var option in pollResponse.pollOptions)
+        // {
+        //     await publishEndpoint.Publish(new PollOptionCreated(option.Id, pollId),
+        //         cancellationToken);
+        // }
     }
     public async Task NotifyPollOptionDeletedAsync(Guid pollOptionId,
         CancellationToken cancellationToken)
