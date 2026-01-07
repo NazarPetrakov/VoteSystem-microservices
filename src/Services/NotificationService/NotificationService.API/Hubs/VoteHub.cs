@@ -8,18 +8,22 @@ public class VoteHub(ILogger<VoteHub> logger) : Hub<IVoteClient>
 {
     public override Task OnConnectedAsync()
     {
-        logger.LogInformation("A client connected to VoteHub.");
+        var connectionId = Context.ConnectionId;
+
+        logger.LogInformation("A client:{ConnectionId} connected to VoteHub.", connectionId);
         return base.OnConnectedAsync();
     }
     public override Task OnDisconnectedAsync(Exception? exception)
     {
+        var connectionId = Context.ConnectionId;
+
         if (exception is null)
         {
-            logger.LogError(exception, "A client disconnected from ChatHub with exception");
+            logger.LogInformation("A client:{ConnectionId} disconnected from ChatHub", connectionId);
         }
         else
         {
-            logger.LogInformation("A client disconnected from ChatHub");
+            logger.LogError(exception, "A client:{ConnectionId} disconnected from ChatHub with exception", connectionId);
         }
         return base.OnDisconnectedAsync(exception);
     }
@@ -29,7 +33,7 @@ public class VoteHub(ILogger<VoteHub> logger) : Hub<IVoteClient>
 
         await Clients.Group(groupName).ReceiveVotes(notification);
 
-        logger.LogInformation($"A client:{connectionId} received the voteCountNotification withing the group {groupName}.");
+        logger.LogInformation("A client:{ConnectionId} received the voteCountNotification withing the group {GroupName}.", connectionId, groupName);
     }
     public async Task JoinToGroup(string groupName)
     {
@@ -37,7 +41,7 @@ public class VoteHub(ILogger<VoteHub> logger) : Hub<IVoteClient>
 
         await Groups.AddToGroupAsync(connectionId, groupName);
 
-        logger.LogInformation($"A client:{connectionId} joined the group {groupName}.");
+        logger.LogInformation("A client:{ConnectionId} joined the group {GroupName}.", connectionId, groupName);
     }
     public async Task LeaveGroup(string groupName)
     {
@@ -45,6 +49,6 @@ public class VoteHub(ILogger<VoteHub> logger) : Hub<IVoteClient>
 
         await Groups.RemoveFromGroupAsync(connectionId, groupName);
 
-        logger.LogInformation($"A client:{connectionId} left the group {groupName}.");
+        logger.LogInformation("A client:{ConnectionId} left the group {GroupName}.", connectionId, groupName);
     }
 }

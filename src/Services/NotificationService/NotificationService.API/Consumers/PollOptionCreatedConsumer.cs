@@ -13,8 +13,13 @@ public class PollOptionCreatedConsumer(ILogger<PollOptionCreatedConsumer> logger
     {
         var pollOptionCreated = context.Message;
 
-        var poll = await repository.GetAsync(pollOptionCreated.PollId)
-            ?? throw new NotFoundException($"Poll with id - {pollOptionCreated.PollId} not found.");
+        var poll = await repository.GetAsync(pollOptionCreated.PollId);
+
+        if (poll is null)
+        {
+            logger.LogError("Poll with id - {PollId} not found.", pollOptionCreated.PollId);
+            throw new NotFoundException($"Poll with id - {pollOptionCreated.PollId} not found.");
+        }
 
         poll.Options.Add(new NotificationPollOption
         {

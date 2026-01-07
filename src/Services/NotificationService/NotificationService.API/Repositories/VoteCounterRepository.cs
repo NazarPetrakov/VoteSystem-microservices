@@ -14,7 +14,7 @@ public class VoteCounterRepository : IVoteCounterRepository
         _collection = database.GetCollection<NotificationPoll>(_collectionName);
     }
 
-    public async Task DecrementVoteCountAsync(Guid pollId, Guid optionId)
+    public async Task<NotificationPoll> DecrementVoteCountAsync(Guid pollId, Guid optionId)
     {
         var filter = Builders<NotificationPoll>.Filter.And(
             Builders<NotificationPoll>.Filter.Eq(p => p.Id, pollId),
@@ -26,10 +26,17 @@ public class VoteCounterRepository : IVoteCounterRepository
             .Inc(p => p.TotalVotes, -1)
             .Inc("Options.$.VoteCount", -1);
 
-        var result = await _collection.UpdateOneAsync(filter, update);
+        var options = new FindOneAndUpdateOptions<NotificationPoll>
+        {
+            ReturnDocument = ReturnDocument.After
+        };
+
+        var updatedPoll = await _collection.FindOneAndUpdateAsync(filter, update, options);
+
+        return updatedPoll;
     }
 
-    public async Task IncrementVoteCountAsync(Guid pollId, Guid optionId)
+    public async Task<NotificationPoll> IncrementVoteCountAsync(Guid pollId, Guid optionId)
     {
         var filter = Builders<NotificationPoll>.Filter.And(
             Builders<NotificationPoll>.Filter.Eq(p => p.Id, pollId),
@@ -39,6 +46,13 @@ public class VoteCounterRepository : IVoteCounterRepository
             .Inc(p => p.TotalVotes, 1)
             .Inc("Options.$.VoteCount", 1);
 
-        await _collection.UpdateOneAsync(filter, update);
+        var options = new FindOneAndUpdateOptions<NotificationPoll>
+        {
+            ReturnDocument = ReturnDocument.After
+        };
+
+        var updatedPoll = await _collection.FindOneAndUpdateAsync(filter, update, options);
+
+        return updatedPoll;
     }
 }
