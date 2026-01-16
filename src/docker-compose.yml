@@ -1,6 +1,8 @@
 services:
   mssql:
     image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: vote-mssql
+    restart: always
     ports:
       - "1433:1433"
     environment:
@@ -10,6 +12,7 @@ services:
       - sql_data:/var/opt/mssql
   rabbit_mq:
     image: rabbitmq:3-management
+    container_name: vote-rabbitmq
     hostname: rabbitmq
     restart: always
     environment:
@@ -21,6 +24,18 @@ services:
       - 5672:5672
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
+  seq:
+    image: datalust/seq
+    container_name: vote-seq
+    restart: always
+    volumes:
+      - seq_data:/data
+    ports:
+      - "5341:5341"
+      - "80:80"
+    environment:
+      - ACCEPT_EULA=Y
+      - SEQ_FIRSTRUN_ADMINPASSWORD=admin
 
   # pollService:
   #   image: poll-service:1.0
@@ -77,3 +92,4 @@ services:
 volumes:
   sql_data:
   rabbitmq_data:
+  seq_data:
