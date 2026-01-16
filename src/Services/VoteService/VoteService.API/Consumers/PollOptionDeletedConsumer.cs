@@ -27,6 +27,6 @@ public class PollOptionDeletedConsumer(ILogger<PollOptionDeletedConsumer> logger
 
         await pollOptionRepository.DeleteAndSaveAsync(pollOptionCache);
 
-        logger.LogInformation($"{typeof(PollOptionDeletedConsumer)}: poll option id - {pollOptionCache.Id}");
+        logger.LogInformation("Poll option with ID {PollOptionId} deleted", pollOptionCache.Id);
     }
 }

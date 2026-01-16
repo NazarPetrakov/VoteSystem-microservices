@@ -21,7 +21,7 @@ public class PollCreatedConsumer(ILogger<PollCreatedConsumer> logger,
 
         if (createdPoll.Id != pollCreated.PollId)
         {
-            logger.LogWarning("Poll with id - {PollId} was not created", pollCreated.PollId);
+            logger.LogWarning("Poll with ID {PollId} was not created", pollCreated.PollId);
         }
 
         foreach (var optionId in pollCreated.OptionIds)
@@ -33,6 +33,6 @@ public class PollCreatedConsumer(ILogger<PollCreatedConsumer> logger,
             });
         }
 
-        logger.LogInformation($"{typeof(PollCreatedConsumer)}: poll id - {pollCreated.PollId}");
+        logger.LogInformation("Poll with ID {PollId} created", pollCreated.PollId);
     }
 }

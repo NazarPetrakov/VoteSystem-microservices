@@ -19,6 +19,6 @@ public class UserCreatedConsumer(ILogger<UserCreatedConsumer> logger,
             UserName = userCreated.UserName,
         });
 
-        logger.LogInformation($"{typeof(UserCreatedConsumer)}: poll id - {userCreated.UserId}");
+        logger.LogInformation("User with ID {UserId} created", userCreated.UserId);
     }
 }
