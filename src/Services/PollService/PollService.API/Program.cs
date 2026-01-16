@@ -3,8 +3,8 @@ using Common.Middlewares;
 using PollService.API.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
+
 var configuration = builder.Configuration;
-// Add services to the container.
 
 builder.Services.AddControllers();
 builder.Services
@@ -17,9 +17,9 @@ builder.Services
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var app = builder.Build();
+builder.Host.UseCommonSerilog();
 
-// Configure the HTTP request pipeline.
+var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
