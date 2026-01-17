@@ -30,4 +30,8 @@ public static class AuthErrors
 
     public static readonly Error EmailNotConfirmed =
         new("Auth.EmailNotConfirmed", "You must confirm your email before logging in.");
+
+    public static readonly Error Forbidden =
+        new("Auth.Forbidden", "You are not allowed.");
+
 }
