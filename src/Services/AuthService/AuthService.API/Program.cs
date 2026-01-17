@@ -20,6 +20,8 @@ builder.Services
     .AddAppServices()
     .AddAppAuthentication(configuration);
 
+builder.Host.UseCommonSerilog();
+
 var app = builder.Build();
 
 app.UseHttpsRedirection();
