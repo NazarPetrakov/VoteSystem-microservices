@@ -24,6 +24,8 @@ builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection(Mon
 
 builder.Services.AddCommonOptions(builder.Configuration).AddAppServices().AddDbServices(mongoSettings);
 
+builder.Host.UseCommonSerilog();
+
 var app = builder.Build();
 
 app.UseCors(c =>

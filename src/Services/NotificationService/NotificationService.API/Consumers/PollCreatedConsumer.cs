@@ -24,6 +24,6 @@ public class PollCreatedConsumer(ILogger<PollCreatedConsumer> logger,
             Options = pollOptionsToCreate
         });
 
-        logger.LogInformation($"{typeof(PollCreatedConsumer)}: poll id - {pollCreated.PollId}");
+        logger.LogInformation("Poll with ID {PollId} created", pollCreated.PollId);
     }
 }

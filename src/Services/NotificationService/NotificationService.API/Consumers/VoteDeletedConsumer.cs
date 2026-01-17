@@ -34,6 +34,6 @@ public class VoteDeletedConsumer(ILogger<VoteDeletedConsumer> logger,
 
         logger.LogInformation("Client withing the group: {GroupName} received notification", updatedVoteCount.Id.ToString());
 
-        logger.LogInformation($"{typeof(VoteDeletedConsumer)}: vote id - {voteDeleted.VoteId}");
+        logger.LogInformation("Vote with ID {VoteId} deleted", voteDeleted.VoteId);
     }
 }

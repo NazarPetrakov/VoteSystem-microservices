@@ -28,6 +28,7 @@ public class PollOptionCreatedConsumer(ILogger<PollOptionCreatedConsumer> logger
 
         await repository.UpdateAndSaveAsync(poll);
 
-        logger.LogInformation($"{typeof(PollOptionCreatedConsumer)}: poll id - {pollOptionCreated.PollId}");
+        logger.LogInformation("Poll option with ID {PollOptionId} created for poll with ID {PollId}",
+            pollOptionCreated.PollOptionId, pollOptionCreated.PollId);
     }
 }

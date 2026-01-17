@@ -34,6 +34,6 @@ public class VoteCreatedConsumer(ILogger<VoteCreatedConsumer> logger,
 
         logger.LogInformation("Client withing the group: {GroupName} received notification", updatedVoteCount.Id.ToString());
 
-        logger.LogInformation($"{typeof(VoteCreatedConsumer)}: vote id - {voteCreated.VoteId}");
+        logger.LogInformation("Vote with ID {VoteId} created", voteCreated.VoteId);
     }
 }
