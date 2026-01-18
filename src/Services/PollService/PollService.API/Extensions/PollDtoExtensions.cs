@@ -21,7 +21,7 @@ public static class PollDtoExtensions
             poll.IsActive,
             poll.PollOptions.Select(po => po.ToDto()).ToList());
     }
-    public static Poll ToEntity(this CreatePollRequest pollCreate)
+    public static Poll ToEntity(this CreatePollRequest pollCreate, int userId)
     {
         var timeCount = pollCreate.TimeCount;
         TimeSpan timeSpan = pollCreate.TimeUnit switch
@@ -36,7 +36,7 @@ public static class PollDtoExtensions
         {
             Title = pollCreate.Title,
             Topic = pollCreate.Topic,
-            UserId = pollCreate.UserId,
+            UserId = userId,
             Duration = timeSpan,
             IsClosed = pollCreate.IsClosed,
         };
@@ -48,7 +48,7 @@ public static class PollDtoExtensions
             Id = pollUpdate.Id,
             Title = pollUpdate.Title ?? existedPoll.Title,
             Topic = pollUpdate.Topic ?? existedPoll.Topic,
-            UserId = pollUpdate.UserId ?? existedPoll.UserId,
+            UserId = existedPoll.UserId,
             IsClosed = pollUpdate.IsClosed ?? existedPoll.IsClosed,
             CreatedAt = existedPoll.CreatedAt,
             UpdatedAt = DateTimeOffset.UtcNow

@@ -1,9 +1,11 @@
 using Common.Contracts.User;
+using Common.Errors;
 using Common.Extensions;
 using Common.Pagination;
 using Common.Result;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PollService.API.Extensions;
 using PollService.API.Helpers;
 using PollService.API.Interfaces;
 
@@ -44,7 +46,12 @@ namespace PollService.API.Controllers
         public async Task<ActionResult<PollResponse>> Create(CreatePollRequest createPollRequest,
             CancellationToken cancellationToken)
         {
-            var createdPoll = await pollOrchestrator.CreateAsync(createPollRequest, cancellationToken);
+            var userIdResult = User.GetId();
+
+            if (!userIdResult.IsSuccess)
+                return Unauthorized();
+
+            var createdPoll = await pollOrchestrator.CreateAsync(createPollRequest, userIdResult.Data, cancellationToken);
 
             return createdPoll.Match<PollResponse, ActionResult>(
                 onSuccess: value => CreatedAtAction(nameof(Get), new { id = value.Id }, value),
@@ -55,7 +62,15 @@ namespace PollService.API.Controllers
         [HttpPut]
         public async Task<ActionResult> Update(UpdatePollRequest updatePollRequest)
         {
-            var result = await pollOrchestrator.UpdateAsync(updatePollRequest);
+            var userIdResult = User.GetId();
+
+            if (!userIdResult.IsSuccess)
+                return Unauthorized();
+
+            var result = await pollOrchestrator.UpdateAsync(updatePollRequest, userIdResult.Data);
+
+            if (result.Errors.Contains(AuthErrors.Forbidden))
+                return Forbid(AuthErrors.Forbidden.Description);
 
             return result.Match<ActionResult>(
                 onSuccess: Ok,
@@ -66,7 +81,12 @@ namespace PollService.API.Controllers
         [HttpPatch("{id}/close")]
         public async Task<ActionResult> ClosePoll(Guid id)
         {
-            var result = await pollOrchestrator.ClosePollAsync(id);
+            var userIdResult = User.GetId();
+
+            if (!userIdResult.IsSuccess)
+                return Unauthorized();
+
+            var result = await pollOrchestrator.ClosePollAsync(id, userIdResult.Data);
 
             return result.Match<ActionResult>(
                     onSuccess: Ok,
@@ -77,7 +97,15 @@ namespace PollService.API.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
-            var result = await pollOrchestrator.DeleteAsync(id, cancellationToken);
+            var userIdResult = User.GetId();
+
+            if (!userIdResult.IsSuccess)
+                return Unauthorized();
+
+            var result = await pollOrchestrator.DeleteAsync(id, userIdResult.Data, cancellationToken);
+
+            if (result.Errors.Contains(AuthErrors.Forbidden))
+                return Forbid(AuthErrors.Forbidden.Description);
 
             return result.Match<ActionResult>(
                 onSuccess: Ok,

@@ -5,14 +5,12 @@ public record CreatePollRequest(
     string? Topic,
     int TimeCount,
     string TimeUnit,
-    int UserId,
     bool IsClosed,
     ICollection<CreatePollOptionFromPollDto>? pollOptionsToCreate);
 public record UpdatePollRequest(
     Guid Id,
     string? Title,
     string? Topic,
-    int? UserId,
     bool? IsClosed);
 public record PollResponse(
     Guid Id,

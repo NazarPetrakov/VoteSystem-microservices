@@ -85,10 +85,11 @@ public class PollOrchestrator(IRepository<Poll, Guid> pollRepository,
 
         return Result.Success(poll.ToDto());
     }
-    public async Task<Result<PollResponse>> CreateAsync(CreatePollRequest createPollRequest, CancellationToken cancellationToken)
+    public async Task<Result<PollResponse>> CreateAsync(CreatePollRequest createPollRequest, int userId,
+        CancellationToken cancellationToken)
     {
         int order = 1;
-        var poll = createPollRequest.ToEntity();
+        var poll = createPollRequest.ToEntity(userId);
 
         var user = await userRepository.GetAsync(poll.UserId);
         if (user is null)
@@ -117,12 +118,15 @@ public class PollOrchestrator(IRepository<Poll, Guid> pollRepository,
 
         return Result.Success(pollResponse);
     }
-    public async Task<Result> DeleteAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<Result> DeleteAsync(Guid id, int userId, CancellationToken cancellationToken)
     {
         var poll = await pollRepository.GetAsync(id);
 
         if (poll == null)
             return Result.Failure(PollErrors.NotFound(id));
+
+        if (poll.UserId != userId)
+            return Result.Failure(AuthErrors.Forbidden);
 
         await pollRepository.DeleteAndSaveAsync(poll);
 
@@ -130,12 +134,15 @@ public class PollOrchestrator(IRepository<Poll, Guid> pollRepository,
 
         return Result.Success();
     }
-    public async Task<Result> ClosePollAsync(Guid pollId)
+    public async Task<Result> ClosePollAsync(Guid pollId, int userId)
     {
         var pollFromId = await pollRepository.GetAsync(pollId);
 
         if (pollFromId == null)
             return Result.Failure(PollErrors.NotFound(pollId));
+
+        if (pollFromId.UserId != userId)
+            return Result.Failure(AuthErrors.Forbidden);
 
         if (pollFromId.IsClosed)
             return Result.Failure(PollErrors.AlreadyClosed(pollId));
@@ -146,12 +153,15 @@ public class PollOrchestrator(IRepository<Poll, Guid> pollRepository,
 
         return Result.Success();
     }
-    public async Task<Result> UpdateAsync(UpdatePollRequest updatePollRequest)
+    public async Task<Result> UpdateAsync(UpdatePollRequest updatePollRequest, int userId)
     {
         var pollFromId = await pollRepository.GetAsync(updatePollRequest.Id);
 
         if (pollFromId == null)
             return Result.Failure<PollResponse>(PollErrors.NotFound(updatePollRequest.Id));
+
+        if (pollFromId.UserId != userId)
+            return Result.Failure(AuthErrors.Forbidden);
 
         var poll = updatePollRequest.ToEntity(pollFromId);
 
