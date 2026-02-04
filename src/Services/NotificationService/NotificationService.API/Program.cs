@@ -35,7 +35,7 @@ app.UseCors(c =>
 
 app.MapHub<VoteHub>("/voteHub");
 
-app.MapGet("api/notifications/poll/{pollId}/votes", async (Guid pollId, IRepository<NotificationPoll, Guid> repository) =>
+app.MapGet("api/notifications/poll/{pollId}/votes", async (Guid pollId, IRepository<PollWithTotalVotes, Guid> repository) =>
 {
     var result = await repository.GetAsync(pollId);
     if (result is null)
@@ -52,7 +52,7 @@ app.UseHttpsRedirection();
 using (var scope = app.Services.CreateScope())
 {
     var repository = scope.ServiceProvider
-        .GetRequiredService<IRepository<NotificationPoll, Guid>>();
+        .GetRequiredService<IRepository<PollWithTotalVotes, Guid>>();
 
     await repository.GetAllQuery().AnyAsync();
 }

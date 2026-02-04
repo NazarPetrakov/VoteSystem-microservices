@@ -4,7 +4,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace NotificationService.API.Models;
 
-public class NotificationPoll : IEntity<Guid>
+public class PollWithTotalVotes : IEntity<Guid>
 {
     [BsonId]
     [BsonRepresentation(BsonType.String)]
@@ -12,5 +12,5 @@ public class NotificationPoll : IEntity<Guid>
     public string Title { get; set; } = string.Empty;
     public bool IsClosed { get; set; } = false;
     public int TotalVotes { get; set; } = 0;
-    public List<NotificationPollOption> Options { get; set; } = new();
+    public List<PollOptionWithVotes> Options { get; set; } = new();
 }

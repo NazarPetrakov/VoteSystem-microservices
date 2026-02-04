@@ -7,26 +7,26 @@ namespace NotificationService.API.Repositories;
 public class VoteCounterRepository : IVoteCounterRepository
 {
     private readonly string _collectionName = "PollNotification";
-    private readonly IMongoCollection<NotificationPoll> _collection;
+    private readonly IMongoCollection<PollWithTotalVotes> _collection;
 
     public VoteCounterRepository(IMongoDatabase database)
     {
-        _collection = database.GetCollection<NotificationPoll>(_collectionName);
+        _collection = database.GetCollection<PollWithTotalVotes>(_collectionName);
     }
 
-    public async Task<NotificationPoll> DecrementVoteCountAsync(Guid pollId, Guid optionId)
+    public async Task<PollWithTotalVotes> DecrementVoteCountAsync(Guid pollId, Guid optionId)
     {
-        var filter = Builders<NotificationPoll>.Filter.And(
-            Builders<NotificationPoll>.Filter.Eq(p => p.Id, pollId),
-            Builders<NotificationPoll>.Filter.ElemMatch(
+        var filter = Builders<PollWithTotalVotes>.Filter.And(
+            Builders<PollWithTotalVotes>.Filter.Eq(p => p.Id, pollId),
+            Builders<PollWithTotalVotes>.Filter.ElemMatch(
                 p => p.Options, o => o.OptionId == optionId && o.VoteCount > 0)
     );
 
-        var update = Builders<NotificationPoll>.Update
+        var update = Builders<PollWithTotalVotes>.Update
             .Inc(p => p.TotalVotes, -1)
             .Inc("Options.$.VoteCount", -1);
 
-        var options = new FindOneAndUpdateOptions<NotificationPoll>
+        var options = new FindOneAndUpdateOptions<PollWithTotalVotes>
         {
             ReturnDocument = ReturnDocument.After
         };
@@ -36,17 +36,17 @@ public class VoteCounterRepository : IVoteCounterRepository
         return updatedPoll;
     }
 
-    public async Task<NotificationPoll> IncrementVoteCountAsync(Guid pollId, Guid optionId)
+    public async Task<PollWithTotalVotes> IncrementVoteCountAsync(Guid pollId, Guid optionId)
     {
-        var filter = Builders<NotificationPoll>.Filter.And(
-            Builders<NotificationPoll>.Filter.Eq(p => p.Id, pollId),
-            Builders<NotificationPoll>.Filter.ElemMatch(p => p.Options, o => o.OptionId == optionId)
+        var filter = Builders<PollWithTotalVotes>.Filter.And(
+            Builders<PollWithTotalVotes>.Filter.Eq(p => p.Id, pollId),
+            Builders<PollWithTotalVotes>.Filter.ElemMatch(p => p.Options, o => o.OptionId == optionId)
         );
-        var update = Builders<NotificationPoll>.Update
+        var update = Builders<PollWithTotalVotes>.Update
             .Inc(p => p.TotalVotes, 1)
             .Inc("Options.$.VoteCount", 1);
 
-        var options = new FindOneAndUpdateOptions<NotificationPoll>
+        var options = new FindOneAndUpdateOptions<PollWithTotalVotes>
         {
             ReturnDocument = ReturnDocument.After
         };

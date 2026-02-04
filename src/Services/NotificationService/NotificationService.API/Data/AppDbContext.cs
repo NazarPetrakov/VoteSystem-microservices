@@ -6,13 +6,13 @@ namespace NotificationService.API.Data;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
-    public DbSet<NotificationPoll> Polls { get; init; }
+    public DbSet<PollWithTotalVotes> Polls { get; init; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<NotificationPoll>()
-            .ToCollection("PollNotification");
+        modelBuilder.Entity<PollWithTotalVotes>()
+            .ToCollection("PollWithTotalVotes");
     }
 }

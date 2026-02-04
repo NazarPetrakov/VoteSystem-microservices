@@ -7,7 +7,7 @@ using NotificationService.API.Models;
 namespace NotificationService.API.Consumers;
 
 public class PollDeletedConsumer(ILogger<PollDeletedConsumer> logger,
-    IRepository<NotificationPoll, Guid> repository) : IConsumer<PollDeleted>
+    IRepository<PollWithTotalVotes, Guid> repository) : IConsumer<PollDeleted>
 {
     public async Task Consume(ConsumeContext<PollDeleted> context)
     {

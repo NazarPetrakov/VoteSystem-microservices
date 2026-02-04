@@ -7,7 +7,7 @@ using NotificationService.API.Models;
 namespace NotificationService.API.Consumers;
 
 public class PollOptionCreatedConsumer(ILogger<PollOptionCreatedConsumer> logger,
-    IRepository<NotificationPoll, Guid> repository) : IConsumer<PollOptionCreated>
+    IRepository<PollWithTotalVotes, Guid> repository) : IConsumer<PollOptionCreated>
 {
     public async Task Consume(ConsumeContext<PollOptionCreated> context)
     {
@@ -21,7 +21,7 @@ public class PollOptionCreatedConsumer(ILogger<PollOptionCreatedConsumer> logger
             throw new NotFoundException($"Poll with id - {pollOptionCreated.PollId} not found.");
         }
 
-        poll.Options.Add(new NotificationPollOption
+        poll.Options.Add(new PollOptionWithVotes
         {
             OptionId = pollOptionCreated.PollOptionId
         });

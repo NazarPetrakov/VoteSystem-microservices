@@ -19,11 +19,11 @@ public class VoteHub(ILogger<VoteHub> logger) : Hub<IVoteClient>
 
         if (exception is null)
         {
-            logger.LogInformation("A client:{ConnectionId} disconnected from ChatHub", connectionId);
+            logger.LogInformation("A client:{ConnectionId} disconnected from VoteHub", connectionId);
         }
         else
         {
-            logger.LogError(exception, "A client:{ConnectionId} disconnected from ChatHub with exception", connectionId);
+            logger.LogError(exception, "A client:{ConnectionId} disconnected from VoteHub with exception", connectionId);
         }
         return base.OnDisconnectedAsync(exception);
     }
