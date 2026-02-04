@@ -16,7 +16,7 @@ public class PollCreatedConsumer(ILogger<PollCreatedConsumer> logger,
         var createdPoll = await pollRepository.CreateAndSaveAsync(new PollCache
         {
             Id = pollCreated.PollId,
-            IsClosed = pollCreated.IsClosed
+            IsClosed = false
         });
 
         if (createdPoll.Id != pollCreated.PollId)

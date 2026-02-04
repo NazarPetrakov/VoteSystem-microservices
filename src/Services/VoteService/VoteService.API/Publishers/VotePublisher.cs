@@ -15,7 +15,7 @@ public class VotePublisher(IPublishEndpoint publishEndpoint, ILogger<VotePublish
             return;
         }
 
-        await publishEndpoint.Publish(new VoteCreated(voteResponse.VoteId,
+        await publishEndpoint.Publish(new VoteCreated(voteResponse.VoteId, voteResponse.UserId,
             voteResponse.PollId.Value, voteResponse.PollOptionId.Value),
                 cancellationToken);
     }
@@ -28,7 +28,7 @@ public class VotePublisher(IPublishEndpoint publishEndpoint, ILogger<VotePublish
             return;
         }
 
-        await publishEndpoint.Publish(new VoteDeleted(voteResponse.VoteId,
+        await publishEndpoint.Publish(new VoteDeleted(voteResponse.VoteId, voteResponse.UserId,
             voteResponse.PollId.Value, voteResponse.PollOptionId.Value),
                 cancellationToken);
     }
