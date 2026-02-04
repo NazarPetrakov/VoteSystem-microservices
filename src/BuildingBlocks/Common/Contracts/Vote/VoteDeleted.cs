@@ -1,3 +1,3 @@
 namespace Common.Contracts.Vote;
 
-public record VoteDeleted(Guid VoteId, Guid PollId, Guid PollOptionId) { }
+public record VoteDeleted(Guid VoteId, int UserId, Guid PollId, Guid PollOptionId) { }

@@ -1,3 +1,3 @@
 namespace Common.Contracts.Poll;
 
-public record PollCreated(Guid PollId, bool IsClosed, ICollection<Guid> OptionIds) { }
+public record PollCreated(Guid PollId, int UserId, ICollection<Guid> OptionIds) { }
