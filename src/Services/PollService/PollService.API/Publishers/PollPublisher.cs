@@ -19,16 +19,11 @@ public class PollPublisher(IPublishEndpoint publishEndpoint) : IPollPublisher
         CancellationToken cancellationToken)
     {
         var pollId = pollResponse.Id;
+        var userId = pollResponse.UserId;
         var pollOptionIds = pollResponse.pollOptions.Select(o => o.Id).ToList();
 
-        await publishEndpoint.Publish(new PollCreated(pollId, pollResponse.IsClosed, pollOptionIds),
+        await publishEndpoint.Publish(new PollCreated(pollId, userId, pollOptionIds),
             cancellationToken);
-
-        // foreach (var option in pollResponse.pollOptions)
-        // {
-        //     await publishEndpoint.Publish(new PollOptionCreated(option.Id, pollId),
-        //         cancellationToken);
-        // }
     }
     public async Task NotifyPollOptionDeletedAsync(Guid pollOptionId,
         CancellationToken cancellationToken)
@@ -37,10 +32,10 @@ public class PollPublisher(IPublishEndpoint publishEndpoint) : IPollPublisher
             new PollOptionDeleted(pollOptionId),
                 cancellationToken);
     }
-    public async Task NotifyPollDeletedAsync(Guid pollId,
+    public async Task NotifyPollDeletedAsync(Guid pollId, int userId,
         CancellationToken cancellationToken)
     {
-        await publishEndpoint.Publish(new PollDeleted(pollId),
+        await publishEndpoint.Publish(new PollDeleted(pollId, userId),
             cancellationToken);
     }
 }

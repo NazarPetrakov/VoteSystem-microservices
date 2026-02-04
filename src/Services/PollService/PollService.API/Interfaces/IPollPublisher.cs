@@ -10,6 +10,6 @@ public interface IPollPublisher
         CancellationToken cancellationToken);
     Task NotifyPollOptionDeletedAsync(Guid pollOptionId,
         CancellationToken cancellationToken);
-    Task NotifyPollDeletedAsync(Guid pollId,
+    Task NotifyPollDeletedAsync(Guid pollId, int userId,
         CancellationToken cancellationToken);
 }

@@ -130,7 +130,7 @@ public class PollOrchestrator(IRepository<Poll, Guid> pollRepository,
 
         await pollRepository.DeleteAndSaveAsync(poll);
 
-        await pollPublisher.NotifyPollDeletedAsync(id, cancellationToken);
+        await pollPublisher.NotifyPollDeletedAsync(id, userId, cancellationToken);
 
         return Result.Success();
     }
