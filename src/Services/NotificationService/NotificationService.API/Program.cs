@@ -7,6 +7,7 @@ using MongoDB.Bson.Serialization.Serializers;
 using NotificationService.API.Extensions;
 using NotificationService.API.Hubs;
 using NotificationService.API.Models;
+using NotificationService.API.Repositories;
 using NotificationService.API.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,9 +36,22 @@ app.UseCors(c =>
 
 app.MapHub<VoteHub>("/voteHub");
 
-app.MapGet("api/notifications/poll/{pollId}/votes", async (Guid pollId, IRepository<PollWithTotalVotes, Guid> repository) =>
+app.MapGet("api/notifications/poll/{pollId}/votes-count", async (Guid pollId, IRepository<PollWithVotes, Guid> repository) =>
 {
     var result = await repository.GetAsync(pollId);
+
+    if (result is null)
+    {
+        return Results.NotFound();
+    }
+
+    return Results.Ok(result);
+});
+
+app.MapGet("api/notification/users/{userId}/stats", async (int userId, IRepository<UserStats, int> repository) =>
+{
+    var result = await repository.GetAsync(userId);
+
     if (result is null)
     {
         return Results.NotFound();
@@ -51,10 +65,14 @@ app.UseHttpsRedirection();
 //Warmup MongoDb and EFCore connection
 using (var scope = app.Services.CreateScope())
 {
-    var repository = scope.ServiceProvider
-        .GetRequiredService<IRepository<PollWithTotalVotes, Guid>>();
+    var pollsRepository = scope.ServiceProvider
+        .GetRequiredService<IRepository<PollWithVotes, Guid>>();
 
-    await repository.GetAllQuery().AnyAsync();
+    var userStatsRepository = scope.ServiceProvider
+        .GetRequiredService<IRepository<UserStats, int>>();
+
+    await pollsRepository.GetAllQuery().AnyAsync();
+    await userStatsRepository.GetAllQuery().AnyAsync();
 }
 
 app.Run();

@@ -46,6 +46,7 @@ public static class ServiceExtensions
 
         services.AddScoped(typeof(IRepository<,>), typeof(MongoRepository<,>));
         services.AddScoped<IVoteCounterRepository, VoteCounterRepository>();
+        services.AddScoped<IUserStatsRepository, UserStatsRepository>();
 
 
         return services;

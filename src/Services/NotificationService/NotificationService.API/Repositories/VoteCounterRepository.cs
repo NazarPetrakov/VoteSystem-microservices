@@ -1,52 +1,34 @@
-using System;
+using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using NotificationService.API.Models;
+using NotificationService.API.Settings;
 
 namespace NotificationService.API.Repositories;
 
-public class VoteCounterRepository : IVoteCounterRepository
+public class VoteCounterRepository(IMongoDatabase database, IOptions<MongoDbSettings> mongoSettings) : IVoteCounterRepository
 {
-    private readonly string _collectionName = "PollNotification";
-    private readonly IMongoCollection<PollWithTotalVotes> _collection;
+    private readonly IMongoCollection<PollWithVotes> _collection = database
+        .GetCollection<PollWithVotes>(mongoSettings.Value.PollWithTotalVotesCollectionName);
 
-    public VoteCounterRepository(IMongoDatabase database)
+    public async Task<PollWithVotes> DecrementVoteCountAsync(Guid pollId, Guid optionId)
     {
-        _collection = database.GetCollection<PollWithTotalVotes>(_collectionName);
+        return await UpdateVoteCountAsync(pollId, optionId, -1);
     }
-
-    public async Task<PollWithTotalVotes> DecrementVoteCountAsync(Guid pollId, Guid optionId)
+    public async Task<PollWithVotes> IncrementVoteCountAsync(Guid pollId, Guid optionId)
     {
-        var filter = Builders<PollWithTotalVotes>.Filter.And(
-            Builders<PollWithTotalVotes>.Filter.Eq(p => p.Id, pollId),
-            Builders<PollWithTotalVotes>.Filter.ElemMatch(
-                p => p.Options, o => o.OptionId == optionId && o.VoteCount > 0)
-    );
-
-        var update = Builders<PollWithTotalVotes>.Update
-            .Inc(p => p.TotalVotes, -1)
-            .Inc("Options.$.VoteCount", -1);
-
-        var options = new FindOneAndUpdateOptions<PollWithTotalVotes>
-        {
-            ReturnDocument = ReturnDocument.After
-        };
-
-        var updatedPoll = await _collection.FindOneAndUpdateAsync(filter, update, options);
-
-        return updatedPoll;
+        return await UpdateVoteCountAsync(pollId, optionId, 1);
     }
-
-    public async Task<PollWithTotalVotes> IncrementVoteCountAsync(Guid pollId, Guid optionId)
+    private async Task<PollWithVotes> UpdateVoteCountAsync(Guid pollId, Guid optionId, int delta)
     {
-        var filter = Builders<PollWithTotalVotes>.Filter.And(
-            Builders<PollWithTotalVotes>.Filter.Eq(p => p.Id, pollId),
-            Builders<PollWithTotalVotes>.Filter.ElemMatch(p => p.Options, o => o.OptionId == optionId)
+        var filter = Builders<PollWithVotes>.Filter.And(
+            Builders<PollWithVotes>.Filter.Eq(p => p.Id, pollId),
+            Builders<PollWithVotes>.Filter.ElemMatch(p => p.Options, o => o.OptionId == optionId)
         );
-        var update = Builders<PollWithTotalVotes>.Update
-            .Inc(p => p.TotalVotes, 1)
-            .Inc("Options.$.VoteCount", 1);
+        var update = Builders<PollWithVotes>.Update
+            .Inc(p => p.TotalVotes, delta)
+            .Inc("Options.$.VoteCount", delta);
 
-        var options = new FindOneAndUpdateOptions<PollWithTotalVotes>
+        var options = new FindOneAndUpdateOptions<PollWithVotes>
         {
             ReturnDocument = ReturnDocument.After
         };

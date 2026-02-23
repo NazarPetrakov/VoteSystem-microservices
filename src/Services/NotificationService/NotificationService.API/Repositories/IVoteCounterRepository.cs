@@ -4,6 +4,6 @@ namespace NotificationService.API.Repositories;
 
 public interface IVoteCounterRepository
 {
-    Task<PollWithTotalVotes> IncrementVoteCountAsync(Guid pollId, Guid optionId);
-    Task<PollWithTotalVotes> DecrementVoteCountAsync(Guid pollId, Guid optionId);
+    Task<PollWithVotes> IncrementVoteCountAsync(Guid pollId, Guid optionId);
+    Task<PollWithVotes> DecrementVoteCountAsync(Guid pollId, Guid optionId);
 }
